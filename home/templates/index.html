@@ -1,1 +1,95 @@
 {% extends "principal.html" %}
+{% load static %}
+
+{% block content %}
+
+    <style>
+.card-dark {
+    background-color: #121212;
+    color: white;
+    border: none; /* remove a borda padrão */
+}
+.card-dark .btn {
+    background-color: #1f1f1f; /* botão um pouco mais claro */
+    color: white;
+    border: 1px solid white;
+}
+.card-dark .btn:hover {
+    background-color: #333333;
+    color: white;
+}
+</style>
+    <a class="navbar-brand" href="{% url 'index' %}">
+        <img src="{% static 'img/Estacionamento E D E N S.png' %}" width="100%" height="400">
+    </a>
+
+    <div class="container-float text-center" style="background-color: #2e2c2c; color: white; padding: 0.5px; width: 100%; border-radius: 5px;">
+        <h4 class="text-img">Aqui você poderá marcar, registrar, reserver e trabalhar tendo a confiança no melhor estacionamento</h4>
+    </div>
+
+ <div class="container-flex d-flex flex-column justify-content-center" style="min-height: calc(100vh - 675px); background-color: #cecfcf; " >
+    <div class="row g-4 justify-content-center">
+
+        <!-- Cadastrar Veículo -->
+        <div class="col-md-4 col-lg-2">
+            <div class="card card-dark text-center h-100">
+                <img src="{% static 'img/carro.jpg' %}" class="card-img-top" style="width: 100%; aspect-ratio: 1 / 1; object-fit: cover;" alt="Veículo">
+                <div class="card-body">
+                    <h5 class="card-title">Veículo</h5>
+                    <p class="card-text">Cadastrar um novo veículo</p>
+                    <a href="{% url 'veiculo' %}" class="btn">Acessar</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cliente -->
+        <div class="col-md-4 col-lg-2">
+            <div class="card card-dark text-center h-100">
+                 <img src="{% static 'img/pessoa.jpg' %}" class="card-img-top" style="width: 100%; aspect-ratio: 1 / 1; object-fit: cover;" alt="Pessoa">
+                <div class="card-body">
+                    <h5 class="card-title">Cliente</h5>
+                    <p class="card-text">Cadastrar ou gerenciar clientes</p>
+                    <a href="{% url 'clientes' %}" class="btn">Acessar</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vaga -->
+        <div class="col-md-4 col-lg-2">
+            <div class="card card-dark text-center h-100">
+                 <img src="{% static 'img/vaga.jpg' %}" class="card-img-top" style="width: 100%; aspect-ratio: 1 / 1; object-fit: cover;" alt="Vaga">
+                <div class="card-body">
+                    <h5 class="card-title">Vaga</h5>
+                    <p class="card-text">Gerenciar vagas disponíveis</p>
+                    <a href="{% url 'vagas' %}" class="btn">Acessar</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estadia -->
+        <div class="col-md-4 col-lg-2">
+            <div class="card card-dark text-center h-100">
+                 <img src="{% static 'img/esatadia.jpg' %}" class="card-img-top" style="width: 100%; aspect-ratio: 1 / 1; object-fit: cover;" alt="Estadia">
+                <div class="card-body">
+                    <h5 class="card-title">Estadia</h5>
+                    <p class="card-text">Registrar entrada e saída</p>
+                    <a href="#" class="btn">Acessar</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagar -->
+        <div class="col-md-4 col-lg-2">
+            <div class="card card-dark text-center h-100">
+                 <img src="{% static 'img/dindin.jpg' %}" class="card-img-top" style="width: 100%; aspect-ratio: 1 / 1; object-fit: cover;" alt="Dinheiro">
+                <div class="card-body">
+                    <h5 class="card-title">Pagar</h5>
+                    <p class="card-text">Efetuar pagamentos</p>
+                    <a href="#" class="btn">Acessar</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

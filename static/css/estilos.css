@@ -1,0 +1,14 @@
+.navbar-custom{
+    background-color: #2e2c2c;
+}
+
+body:not(.navbar-custom) {
+    background-color: #121212;
+}
+.text-img{
+    margin-top: 15px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+

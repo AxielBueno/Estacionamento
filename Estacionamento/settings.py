@@ -39,7 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 
-INSTALLED_APPS += ['home', ]
+INSTALLED_APPS += ['home', 'pessoa', 'veiculo', 'vaga', 'estadia', 'pagamento' ]
+
+INSTALLED_APPS += ['django_bootstrap5', 'stdimage']
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

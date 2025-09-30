@@ -1,0 +1,96 @@
+{% extends 'principal.html' %}
+{% load django_bootstrap5 %}
+{% load static %}
+{% block content %}
+
+    <div class="contaier-flex text-center text-white" style="background-color: #121212; padding: 5px">
+        <h4>Aqui você poderá realizar cadastros, edições e apagar clientes existentes</h4>
+    </div>
+
+    <section class="section">
+    <div class="container mb-5 mt-5">
+        <form action="" method="GET" class="d-flex justify-content-start align-items-center gap-2">
+            <!-- Campo de busca -->
+            <input class="form-control" type="text" name="buscar" value="{{ request.GET.buscar }}"
+                   placeholder="Digite o nome do cliente" style="max-width: 900px;">
+
+            <!-- Botão Buscar -->
+            <button type="submit" class="btn btn-dark">Buscar</button>
+
+            <!-- Botão Cadastrar Cliente -->
+            <a href="{% url 'cliente_adicionar' %}" class="btn btn-dark">
+                <i class="fas fa-user-plus"></i> Cadastrar Cliente
+            </a>
+        </form>
+    </div>
+</section>
+
+        {% if object_list %}
+        <div class="card-body" style="background-color: #322f30">
+            <h3 class="text-center text-white mb-4">Clientes Cadastrados</h3>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-secondary">
+                        <tr>
+                            <th>Nome</th>
+                            <th>CPF</th>
+                            <th>Fone</th>
+                            <th>Endereço</th>
+                            <th style="width: 100px; text-align: center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cliente in object_list %}
+                        <tr>
+                            <td>
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#modal{{ cliente.id }}">
+                                    {{ cliente.nome }}
+                                </a>
+                            </td>
+                            <td>{{ cliente.cpf }}</td>
+                            <td>{{ cliente.fone }}</td>
+                            <td>{{ cliente.endereco }}</td>
+                            <td class="text-center">
+                                <a href="{% url 'cliente_editar' cliente.pk %}" class="me-2" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'cliente_apagar' cliente.pk %}" title="Apagar" class="text-danger">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </td>
+                        </tr>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="modal{{ cliente.id }}" tabindex="-1" aria-labelledby="modalLabel{{ cliente.id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="modalLabel{{ cliente.id }}">Cliente: {{ cliente.nome }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p><strong>CPF:</strong> {{ cliente.cpf }}</p>
+                                        <p><strong>Fone:</strong> {{ cliente.fone }}</p>
+                                        <p><strong>Endereço:</strong> {{ cliente.endereco }}</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="d-flex justify-content-center">
+                {% bootstrap_pagination object_list size="sm" %}
+            </div>
+        </div>
+        {% else %}
+            <p class="text-center mt-4">Nenhum cliente encontrado.</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
