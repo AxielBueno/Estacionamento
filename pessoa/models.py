@@ -6,7 +6,6 @@ class Pessoa(models.Model):
     nome = models.CharField('Nome', max_length=50, help_text='Nome completo')
     cpf = models.CharField('CPF', max_length=11, help_text='CPF completo', unique=True)
     fone = models.CharField('Fone', max_length=11, help_text='Número de telefone', unique=True)
-    #veiculo = modes.
 
     class Meta:
         abstract = True

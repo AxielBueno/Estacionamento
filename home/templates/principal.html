@@ -7,7 +7,7 @@
 {% endblock %}
 <body>
 <div class="container-float bg-white">
-    <nav class="navbar navbar-expand-lg navbar-custom navbar-dark ">
+    <nav class="navbar navbar-expand-lg navbar-custom navbar-dark sticky-top">
         <div class="container-fluid">
             <a class="navbar-brand" href="{% url 'index' %}">E D E N S</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -30,7 +30,9 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{% url 'vagas' %}">Vagas</a></li>
-                            <li><a class="dropdown-item" href="#">Estadia</a></li>
+                            <li><a class="dropdown-item" href="{% url 'estadias' %}">Estadia</a></li>
+                            <li><a class="dropdown-item" href="#">Agendamento</a></li>
+                            <li><a class="dropdown-item" href="#">Funcionario</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
@@ -48,9 +50,10 @@
 
     {% block content %}
     {% endblock %}
-    {% block footer %}
-			{% include "footer.html" %}
-		{% endblock %}
+
 </div>
 </body>
+{% block footer %}
+			{% include "footer.html" %}
+		{% endblock %}
 </html>
