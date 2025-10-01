@@ -4,7 +4,7 @@ from datetime import timedelta
 class Estadia(models.Model):
     idEstadia = models.AutoField(primary_key=True, verbose_name='ID Estadia')
     entrada = models.DateTimeField('Entrada', help_text='Data e hora de entrada')
-    saida = models.DateTimeField('Saída', help_text='Data e hora de saída')
+    saida = models.DateTimeField('Saída',  blank= True, null= True, help_text='Data e hora de saída')
 
     class Meta:
         verbose_name = 'Estadia'
@@ -16,5 +16,8 @@ class Estadia(models.Model):
     @property
     def permanencia(self):
         if self.entrada and self.saida:
-            return self.saida - self.entrada
-        return timedelta(0)
+            delta = self.saida - self.entrada
+            horas, resto = divmod(delta.total_seconds(), 3600)
+            minutos, segundos = divmod(resto, 60)
+            return f"{int(horas)}h {int(minutos)}m"
+        return "Em andamento"
