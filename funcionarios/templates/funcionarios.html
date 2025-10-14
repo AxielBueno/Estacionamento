@@ -32,6 +32,7 @@
         <table class="table table-hover">
             <thead class="table-secondary">
                 <tr>
+                    <th>ID</th>
                     <th>Nome</th>
                     <th>CPF</th>
                     <th>Fone</th>
@@ -42,6 +43,7 @@
             <tbody>
                 {% for funcionario in object_list %}
                 <tr>
+                    <td>{{ funcionario.idFuncionario }}</td>
                     <td>{{ funcionario.nome }}</td>
                     <td>{{ funcionario.cpf }}</td>
                     <td>{{ funcionario.fone }}</td>

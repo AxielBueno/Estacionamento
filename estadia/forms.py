@@ -1,10 +1,11 @@
 from django import forms
 from .models import Estadia
 
+
 class EstadiaModelForm(forms.ModelForm):
     class Meta:
         model = Estadia
-        fields = ['entrada', 'saida',]
+        fields = ['entrada', 'saida', 'vaga', 'veiculo']
 
         error_messages = {
             'entrada': {
@@ -12,5 +13,11 @@ class EstadiaModelForm(forms.ModelForm):
             },
             'saida': {
                 'required': 'A data e hora de saída são obrigatórias'
+            },
+            'vaga': {
+                'required': 'A vaga já está ocupada'
+            },
+            'veiculo': {
+                'required': 'Veiculo já se encontra em uma vaga'
             },
         }

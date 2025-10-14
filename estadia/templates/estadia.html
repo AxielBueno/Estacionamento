@@ -36,6 +36,8 @@
                         <th>Entrada</th>
                         <th>Saída</th>
                         <th>Permanência</th>
+                        <th>Vaga</th>
+                        <th>Veiculo</th>
                         <th style="width: 100px; text-align: center">Ações</th>
                     </tr>
                     </thead>
@@ -50,6 +52,8 @@
                             <td>{{ estadia.entrada|date:"d/m/Y H:i" }}</td>
                             <td>{{ estadia.saida|date:"d/m/Y H:i" }}</td>
                             <td>{{ estadia.permanencia }}</td>
+                            <td>{{ estadia.vaga }}</td>
+                            <td>{{ estadia.veiculo }}</td>
                             <td class="text-center">
                                 <a href="{% url 'estadia_editar' estadia.pk %}" class="me-2" title="Editar">
                                     <i class="fas fa-edit"></i>
@@ -66,7 +70,7 @@
                             </td>
                         </tr>
 
-                        <!-- Modal de detalhes -->
+
                         <div class="modal fade" id="modal{{ estadia.idEstadia }}" tabindex="-1"
                              aria-labelledby="modalLabel{{ estadia.idEstadia }}" aria-hidden="true">
                             <div class="modal-dialog">
@@ -82,6 +86,8 @@
                                         <p><strong>Entrada:</strong> {{ estadia.entrada|date:"d/m/Y H:i" }}</p>
                                         <p><strong>Saída:</strong> {{ estadia.saida|date:"d/m/Y H:i" }}</p>
                                         <p><strong>Permanência:</strong> {{ estadia.permanencia }}</p>
+                                        <p><strong>Vaga:</strong> {{ estadia.vaga }}</p>
+                                        <p><strong>Veiculo:</strong> {{ estadia.veiculo }}</p>
                                         </p>
                                     </div>
                                     <div class="modal-footer">

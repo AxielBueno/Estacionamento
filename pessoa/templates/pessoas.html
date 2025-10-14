@@ -10,14 +10,12 @@
     <section class="section">
     <div class="container mb-5 mt-5">
         <form action="" method="GET" class="d-flex justify-content-start align-items-center gap-2">
-            <!-- Campo de busca -->
+
             <input class="form-control" type="text" name="buscar" value="{{ request.GET.buscar }}"
                    placeholder="Digite o nome do cliente" style="max-width: 900px;">
 
-            <!-- Botão Buscar -->
             <button type="submit" class="btn btn-dark">Buscar</button>
 
-            <!-- Botão Cadastrar Cliente -->
             <a href="{% url 'cliente_adicionar' %}" class="btn btn-dark">
                 <i class="fas fa-user-plus"></i> Cadastrar Cliente
             </a>
@@ -35,6 +33,7 @@
                             <th>Nome</th>
                             <th>CPF</th>
                             <th>Fone</th>
+                            <th>Email</th>
                             <th>Endereço</th>
                             <th style="width: 100px; text-align: center">Ações</th>
                         </tr>
@@ -49,6 +48,7 @@
                             </td>
                             <td>{{ cliente.cpf }}</td>
                             <td>{{ cliente.fone }}</td>
+                            <td>{{ cliente.email }}</td>
                             <td>{{ cliente.endereco }}</td>
                             <td class="text-center">
                                 <a href="{% url 'cliente_editar' cliente.pk %}" class="me-2" title="Editar">
@@ -71,6 +71,7 @@
                                     <div class="modal-body">
                                         <p><strong>CPF:</strong> {{ cliente.cpf }}</p>
                                         <p><strong>Fone:</strong> {{ cliente.fone }}</p>
+                                        <p><strong>Email:</strong> {{ cliente.email }}</p>
                                         <p><strong>Endereço:</strong> {{ cliente.endereco }}</p>
                                     </div>
                                     <div class="modal-footer">
