@@ -8,10 +8,17 @@ from django.utils import timezone
 from .models import Agendamento
 from .forms import *
 
-def registrar_saida(request, pk):
+
+def finalizar_agendamento(request, pk):
     agendamento = get_object_or_404(Agendamento, pk=pk)
-    agendamento.saida = timezone.now()
-    agendamento.save()
+    if agendamento.status != 'finalizado':
+        agendamento.status = 'finalizado'
+        if not agendamento.saida:
+            agendamento.saida = timezone.now()
+        agendamento.save()
+        messages.success(request, 'Agendamento finalizado com sucesso.')
+    else:
+        messages.info(request, 'Agendamento já está finalizado.')
     return redirect('agendamentos')
 
 class AgendamentoView(ListView):

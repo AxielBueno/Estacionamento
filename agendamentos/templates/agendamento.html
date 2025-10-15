@@ -10,15 +10,12 @@
     <section class="section">
         <div class="container mb-5 mt-5">
             <form action="" method="GET" class="d-flex justify-content-start align-items-center gap-2">
-                <!-- Campo de busca -->
                 <input class="form-control" type="text" name="buscar" value="{{ request.GET.buscar }}"
                        placeholder="Digite a Placa ou o Nome do Dono" style="max-width: 900px;">
 
-                <!-- Botão Buscar -->
                 <button type="submit" class="btn btn-dark">Buscar</button>
 
-                <!-- Botão Cadastrar Agendamento -->
-                <a href="{% url 'agendamentos_add' %}" class="btn btn-dark">
+                <a href="{% url 'agendamentos_adicionar' %}" class="btn btn-dark">
                     <i class="fas fa-plus"></i> Cadastrar Agendamento
                 </a>
             </form>
@@ -38,6 +35,7 @@
                         <th>Entrada</th>
                         <th>Saída Prevista</th>
                         <th>Saída</th>
+                        <th>Status</th>
                         <th>Valor</th>
                         <th>Funcionário</th>
                         <th style="width: 100px; text-align: center">Ações</th>
@@ -54,27 +52,31 @@
                             <td>{{ agendamento.placa }}</td>
                             <td>{{ agendamento.dono }}</td>
                             <td>{{ agendamento.entrada|date:"d/m/Y H:i" }}</td>
-                            <td>{{ agendamento.saidaPrevista|date:"d/m/Y H:i" }}</td>
+                            <td>{{ agendamento.saida_prevista|date:"d/m/Y H:i" }}</td>
                             <td>{{ agendamento.saida|date:"d/m/Y H:i" }}</td>
-                            <td>R$ {{ agendamento.valor }}</td>
+                            <td>{{ agendamento.get_status_display }}</td>
+                            <td>R$ {{ agendamento.valor|floatformat:2 }}</td>
                             <td>{{ agendamento.funcionario }}</td>
                             <td class="text-center">
-                                <a href="{% url 'agendamentos_edit' agendamento.pk %}" class="me-2" title="Editar">
+                                <a href="{% url 'agendamentos_editar' agendamento.pk %}" class="me-2" title="Editar">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <a href="{% url 'agendamentos_delete' agendamento.pk %}" title="Apagar" class="text-danger">
+                                <a href="{% url 'agendamentos_apagar' agendamento.pk %}" title="Apagar"
+                                   class="text-danger">
                                     <i class="fas fa-trash-alt"></i>
                                 </a>
-                                {% if not agendamento.saida %}
-                                    <a href="{% url 'agendamentos_saida' agendamento.pk %}" class="text-success"
-                                       title="Registrar Saída">
-                                        <i class="fas fa-sign-out-alt"></i>
+                                {% if agendamento.status != 'finalizado' %}
+                                    <a href="{% url 'agendamentos_finalizar' agendamento.pk %}" class="text-primary"
+                                       title="Finalizar">
+                                        <i class="fas fa-check-circle"></i>
                                     </a>
+                                {% else %}
+                                    <span class="text-secondary" title="Já finalizado"
+                                          style="pointer-events: none; opacity: 0.4;"><i class="fas fa-check-circle"></i></span>
                                 {% endif %}
                             </td>
                         </tr>
 
-                        <!-- Modal Detalhes -->
                         <div class="modal fade" id="modal{{ agendamento.id }}" tabindex="-1"
                              aria-labelledby="modalLabel{{ agendamento.id }}" aria-hidden="true">
                             <div class="modal-dialog">
@@ -90,13 +92,15 @@
                                         <p><strong>Placa:</strong> {{ agendamento.placa }}</p>
                                         <p><strong>Dono:</strong> {{ agendamento.dono }}</p>
                                         <p><strong>Entrada:</strong> {{ agendamento.entrada|date:"d/m/Y H:i" }}</p>
-                                        <p><strong>Saída Prevista:</strong> {{ agendamento.saidaPrevista|date:"d/m/Y H:i" }}</p>
+                                        <p><strong>Saída
+                                            Prevista:</strong> {{ agendamento.saidaPrevista|date:"d/m/Y H:i" }}</p>
                                         <p><strong>Saída:</strong> {{ agendamento.saida|date:"d/m/Y H:i" }}</p>
                                         <p><strong>Valor:</strong> R$ {{ agendamento.valor }}</p>
                                         <p><strong>Funcionário:</strong> {{ agendamento.funcionario }}</p>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar
+                                        </button>
                                     </div>
                                 </div>
                             </div>
