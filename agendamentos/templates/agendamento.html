@@ -1,0 +1,118 @@
+{% extends 'principal.html' %}
+{% load django_bootstrap5 %}
+{% load static %}
+{% block content %}
+
+    <div class="contaier-flex text-center text-white" style="background-color: #121212; padding: 5px">
+        <h4>Aqui você poderá realizar cadastros, edições e apagar agendamentos existentes</h4>
+    </div>
+
+    <section class="section">
+        <div class="container mb-5 mt-5">
+            <form action="" method="GET" class="d-flex justify-content-start align-items-center gap-2">
+                <!-- Campo de busca -->
+                <input class="form-control" type="text" name="buscar" value="{{ request.GET.buscar }}"
+                       placeholder="Digite a Placa ou o Nome do Dono" style="max-width: 900px;">
+
+                <!-- Botão Buscar -->
+                <button type="submit" class="btn btn-dark">Buscar</button>
+
+                <!-- Botão Cadastrar Agendamento -->
+                <a href="{% url 'agendamentos_add' %}" class="btn btn-dark">
+                    <i class="fas fa-plus"></i> Cadastrar Agendamento
+                </a>
+            </form>
+        </div>
+    </section>
+
+    {% if object_list %}
+        <div class="card-body" style="background-color: #322f30">
+            <h3 class="text-center text-white mb-4">Agendamentos Cadastrados</h3>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-secondary">
+                    <tr>
+                        <th>ID</th>
+                        <th>Placa</th>
+                        <th>Dono</th>
+                        <th>Entrada</th>
+                        <th>Saída Prevista</th>
+                        <th>Saída</th>
+                        <th>Valor</th>
+                        <th>Funcionário</th>
+                        <th style="width: 100px; text-align: center">Ações</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for agendamento in object_list %}
+                        <tr>
+                            <td>
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#modal{{ agendamento.id }}">
+                                    {{ agendamento.id }}
+                                </a>
+                            </td>
+                            <td>{{ agendamento.placa }}</td>
+                            <td>{{ agendamento.dono }}</td>
+                            <td>{{ agendamento.entrada|date:"d/m/Y H:i" }}</td>
+                            <td>{{ agendamento.saidaPrevista|date:"d/m/Y H:i" }}</td>
+                            <td>{{ agendamento.saida|date:"d/m/Y H:i" }}</td>
+                            <td>R$ {{ agendamento.valor }}</td>
+                            <td>{{ agendamento.funcionario }}</td>
+                            <td class="text-center">
+                                <a href="{% url 'agendamentos_edit' agendamento.pk %}" class="me-2" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'agendamentos_delete' agendamento.pk %}" title="Apagar" class="text-danger">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                                {% if not agendamento.saida %}
+                                    <a href="{% url 'agendamentos_saida' agendamento.pk %}" class="text-success"
+                                       title="Registrar Saída">
+                                        <i class="fas fa-sign-out-alt"></i>
+                                    </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+
+                        <!-- Modal Detalhes -->
+                        <div class="modal fade" id="modal{{ agendamento.id }}" tabindex="-1"
+                             aria-labelledby="modalLabel{{ agendamento.id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="modalLabel{{ agendamento.id }}">
+                                            Agendamento #{{ agendamento.id }}
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Fechar"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p><strong>Placa:</strong> {{ agendamento.placa }}</p>
+                                        <p><strong>Dono:</strong> {{ agendamento.dono }}</p>
+                                        <p><strong>Entrada:</strong> {{ agendamento.entrada|date:"d/m/Y H:i" }}</p>
+                                        <p><strong>Saída Prevista:</strong> {{ agendamento.saidaPrevista|date:"d/m/Y H:i" }}</p>
+                                        <p><strong>Saída:</strong> {{ agendamento.saida|date:"d/m/Y H:i" }}</p>
+                                        <p><strong>Valor:</strong> R$ {{ agendamento.valor }}</p>
+                                        <p><strong>Funcionário:</strong> {{ agendamento.funcionario }}</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="d-flex justify-content-center">
+                {% bootstrap_pagination object_list size="sm" %}
+            </div>
+        </div>
+    {% else %}
+        <p class="text-center mt-4">Nenhum agendamento encontrado.</p>
+    {% endif %}
+
+{% endblock %}
