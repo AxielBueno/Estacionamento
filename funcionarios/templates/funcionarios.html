@@ -10,14 +10,11 @@
 <section class="section">
     <div class="container mb-5 mt-5">
         <form action="" method="GET" class="d-flex justify-content-start align-items-center gap-2">
-            <!-- Campo de busca -->
             <input class="form-control" type="text" name="buscar" value="{{ request.GET.buscar }}"
                    placeholder="Digite o nome ou CPF do funcionário" style="max-width: 900px;">
 
-            <!-- Botão Buscar -->
             <button type="submit" class="btn btn-dark">Buscar</button>
 
-            <!-- Botão Cadastrar Funcionário -->
             <a href="{% url 'funcionario_adicionar' %}" class="btn btn-dark">
                 <i class="fas fa-user-plus"></i> Cadastrar Funcionário
             </a>
@@ -26,48 +23,44 @@
 </section>
 
 {% if object_list %}
-<div class="card-body" style="background-color: #322f30">
+<div class="container">
     <h3 class="text-center text-white mb-4">Funcionários Cadastrados</h3>
-    <div class="table-responsive">
-        <table class="table table-hover">
-            <thead class="table-secondary">
-                <tr>
-                    <th>ID</th>
-                    <th>Nome</th>
-                    <th>CPF</th>
-                    <th>Fone</th>
-                    <th>Salário</th>
-                    <th style="width: 120px; text-align: center">Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for funcionario in object_list %}
-                <tr>
-                    <td>{{ funcionario.idFuncionario }}</td>
-                    <td>{{ funcionario.nome }}</td>
-                    <td>{{ funcionario.cpf }}</td>
-                    <td>{{ funcionario.fone }}</td>
-                    <td>{{ funcionario.salario }}</td>
-                    <td class="text-center">
-                        <a href="{% url 'funcionario_editar' funcionario.pk %}" class="me-2" title="Editar">
-                            <i class="fas fa-edit"></i>
-                        </a>
-                        <a href="{% url 'funcionario_apagar' funcionario.pk %}" title="Apagar" class="text-danger">
-                            <i class="fas fa-trash-alt"></i>
-                        </a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+        {% for funcionario in object_list %}
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                {% if funcionario.foto %}
+                <img src="{{ funcionario.foto.thumb.url }}" class="card-img-top" alt="{{ funcionario.nome }}">
+                {% else %}
+                <img src="{% static 'img/placeholder.png' %}" class="card-img-top" alt="Sem imagem">
+                {% endif %}
+
+                <div class="card-body">
+                    <h5 class="card-title">{{ funcionario.nome }}</h5>
+                    <p class="card-text mb-1"><strong>CPF:</strong> {{ funcionario.cpf }}</p>
+                    <p class="card-text mb-1"><strong>Fone:</strong> {{ funcionario.fone }}</p>
+                    <p class="card-text mb-1"><strong>Cargo:</strong> {{ funcionario.cargo }}</p>
+                    <p class="card-text"><strong>Salário:</strong> R$ {{ funcionario.salario }}</p>
+                </div>
+                <div class="card-footer text-center bg-white border-top-0">
+                    <a href="{% url 'funcionario_editar' funcionario.pk %}" class="btn btn-sm btn-outline-primary me-2">
+                        <i class="fas fa-edit"></i> Editar
+                    </a>
+                    <a href="{% url 'funcionario_apagar' funcionario.pk %}" class="btn btn-sm btn-outline-danger">
+                        <i class="fas fa-trash-alt"></i> Apagar
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
     </div>
 
-    <div class="d-flex justify-content-center">
+    <div class="d-flex justify-content-center mt-4">
         {% bootstrap_pagination object_list size="sm" %}
     </div>
 </div>
 {% else %}
-    <p class="text-center mt-4">Nenhum funcionário encontrado.</p>
+    <p class="text-center mt-4 text-white">Nenhum funcionário encontrado.</p>
 {% endif %}
 
 {% endblock %}

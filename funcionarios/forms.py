@@ -4,7 +4,7 @@ from .models import Funcionario
 class FuncionarioModelForm(forms.ModelForm):
     class Meta:
         model = Funcionario
-        fields = ['nome', 'cpf', 'fone', 'cargo', 'salario']
+        fields = ['nome', 'cpf', 'fone', 'cargo', 'salario', 'foto']
 
         error_messages = {
             'nome': {'required': 'O nome do funcionário é obrigatório'},
