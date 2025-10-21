@@ -11,5 +11,6 @@ urlpatterns = [
     path('', include('estadia.urls')),
     path('', include('funcionarios.urls')),
     path('', include('agendamentos.urls')),
+    path('', include('juridico.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

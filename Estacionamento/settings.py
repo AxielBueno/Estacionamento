@@ -40,7 +40,7 @@ INSTALLED_APPS = [
 ]
 
 INSTALLED_APPS += ['home', 'pessoa', 'veiculo', 'vaga', 'estadia', 'pagamento', 'funcionarios',
-                   'agendamentos',
+                   'agendamentos', 'juridico', 'retirada',
                    ]
 
 INSTALLED_APPS += ['django_bootstrap5', 'stdimage',]

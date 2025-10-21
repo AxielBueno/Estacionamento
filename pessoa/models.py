@@ -1,5 +1,6 @@
 from django.db import models
 from django.db.models.functions import Upper
+from juridico.models import Juridico
 
 
 class Pessoa(models.Model):
@@ -15,6 +16,7 @@ class Pessoa(models.Model):
 
 class Cliente(Pessoa):
     endereco = models.CharField('Endereço', max_length=100, help_text='Endereço Completo')
+    empresa = models.ManyToManyField(Juridico, blank=True, related_name='clientes')
 
     class Meta:
         verbose_name = 'Cliente'

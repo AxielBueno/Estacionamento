@@ -35,6 +35,7 @@
                             <th>Fone</th>
                             <th>Email</th>
                             <th>Endereço</th>
+                            <th>Empresas</th> <!-- NOVA COLUNA -->
                             <th style="width: 100px; text-align: center">Ações</th>
                         </tr>
                     </thead>
@@ -50,6 +51,13 @@
                             <td>{{ cliente.fone }}</td>
                             <td>{{ cliente.email }}</td>
                             <td>{{ cliente.endereco }}</td>
+                            <td>
+                                {% for empresa in cliente.empresa.all %}
+                                    {{ empresa.nome }}{% if not forloop.last %}, {% endif %}
+                                {% empty %}
+                                    -
+                                {% endfor %}
+                            </td>
                             <td class="text-center">
                                 <a href="{% url 'cliente_editar' cliente.pk %}" class="me-2" title="Editar">
                                     <i class="fas fa-edit"></i>
@@ -59,7 +67,6 @@
                                 </a>
                             </td>
                         </tr>
-
 
                         <div class="modal fade" id="modal{{ cliente.id }}" tabindex="-1" aria-labelledby="modalLabel{{ cliente.id }}" aria-hidden="true">
                             <div class="modal-dialog">
@@ -73,6 +80,13 @@
                                         <p><strong>Fone:</strong> {{ cliente.fone }}</p>
                                         <p><strong>Email:</strong> {{ cliente.email }}</p>
                                         <p><strong>Endereço:</strong> {{ cliente.endereco }}</p>
+                                        <p><strong>Empresas:</strong>
+                                            {% for empresa in cliente.empresa.all %}
+                                                {{ empresa.nome }}{% if not forloop.last %}, {% endif %}
+                                            {% empty %}
+                                                -
+                                            {% endfor %}
+                                        </p>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
