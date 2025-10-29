@@ -1,0 +1,33 @@
+{% extends 'principal.html' %}
+{% load django_bootstrap5 %}
+{% block content %}
+  <div class="card shadow m-3 col-md-6 mx-auto">
+    <div class="card-body">
+      <h3 class="text-center mb-4">Confirmação de Exclusão</h3>
+
+      <p><strong>Dono:</strong> {{ object.dono.nome }}</p>
+      <p><strong>Placa:</strong> {{ object.placa }}</p>
+      <p><strong>Método:</strong>
+        {% if object.metodo == 'D' %}
+          Débito
+        {% elif object.metodo == 'C' %}
+          Crédito
+        {% else %}
+          Pix
+        {% endif %}
+      </p>
+      <p><strong>Valor Final:</strong> R$ {{ object.valorFinal }}</p>
+      <p><strong>Data do Pagamento:</strong> {{ object.data_pagamento|date:"d/m/Y H:i" }}</p>
+
+      <p class="mt-4">Tem certeza que deseja <strong>excluir</strong> este pagamento?</p>
+
+      <form method="POST">
+        {% csrf_token %}
+        <div class="text-end mt-4">
+          {% bootstrap_button button_type="submit" content="Sim, excluir" button_class="btn-danger" %}
+          <a href="{% url 'pagamentos' %}" class="btn btn-secondary text-white">Cancelar</a>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}
