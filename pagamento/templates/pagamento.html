@@ -10,10 +10,8 @@
 <section class="section">
     <div class="container mb-5 mt-5">
         <form action="" method="GET" class="d-flex justify-content-start align-items-center gap-2">
-
             <input class="form-control" type="text" name="buscar" value="{{ request.GET.buscar }}"
                    placeholder="Digite o nome do dono" style="max-width: 900px;">
-
             <button type="submit" class="btn btn-dark">Buscar</button>
 
             <a href="{% url 'pagamento_adicionar' %}" class="btn btn-dark">
@@ -34,10 +32,13 @@
                     <th>Placa</th>
                     <th>Estadia</th>
                     <th>Método</th>
-                    <th>Multa Aplicada</th>
+                    <th>Multa Aplicada?</th>
+                    <th>Multa (R$)</th>
+                    <th>Desconto (R$)</th>
                     <th>Valor Final (R$)</th>
                     <th>Data do Pagamento</th>
-                    <th style="width: 100px; text-align: center">Ações</th>
+                    <th>Status</th>
+                    <th style="width: 120px; text-align: center">Ações</th>
                 </tr>
             </thead>
             <tbody>
@@ -72,9 +73,39 @@
                             Não
                         {% endif %}
                     </td>
+                    <td>
+                        {% if pagamento.valor_multa > 0 %}
+                            R$ {{ pagamento.valor_multa }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if pagamento.valor_desconto > 0 %}
+                            R$ {{ pagamento.valor_desconto }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
                     <td>R$ {{ pagamento.valorFinal }}</td>
                     <td>{{ pagamento.data_pagamento|date:"d/m/Y H:i" }}</td>
+
+                    <!-- Status -->
+                    <td>
+                        {% if pagamento.status == 'P' %}
+                            <span class="badge bg-warning text-dark">Pendente</span>
+                        {% else %}
+                            <span class="badge bg-success">Concluído</span>
+                        {% endif %}
+                    </td>
+
+                    <!-- Ações -->
                     <td class="text-center">
+                        {% if pagamento.status == 'P' %}
+                            <a href="{% url 'pagamento_concluir' pagamento.pk %}" class="me-2 text-success" title="Marcar como concluído">
+                                <i class="fas fa-check-circle"></i>
+                            </a>
+                        {% endif %}
                         <a href="{% url 'pagamento_editar' pagamento.pk %}" class="me-2" title="Editar">
                             <i class="fas fa-edit"></i>
                         </a>
@@ -108,12 +139,26 @@
                                     {% endif %}
                                 </p>
                                 <p><strong>Valor Hora:</strong> R$ {{ pagamento.valorHora }}</p>
-                                <p><strong>Valor Final:</strong> R$ {{ pagamento.valorFinal }}</p>
+                                <p><strong>Desconto:</strong>
+                                    {% if pagamento.valor_desconto > 0 %}
+                                        R$ {{ pagamento.valor_desconto }}
+                                    {% else %}
+                                        Nenhum
+                                    {% endif %}
+                                </p>
                                 <p><strong>Multa Aplicada:</strong>
                                     {% if pagamento.multa_aplicada %}
-                                        Sim ({{ pagamento.multa }}%)
+                                        Sim ({{ pagamento.multa }}%) — R$ {{ pagamento.valor_multa }}
                                     {% else %}
                                         Não
+                                    {% endif %}
+                                </p>
+                                <p><strong>Valor Final:</strong> R$ {{ pagamento.valorFinal }}</p>
+                                <p><strong>Status:</strong>
+                                    {% if pagamento.status == 'P' %}
+                                        Pendente
+                                    {% else %}
+                                        Concluído
                                     {% endif %}
                                 </p>
                                 <p><strong>Data do Pagamento:</strong> {{ pagamento.data_pagamento|date:"d/m/Y H:i" }}</p>

@@ -12,6 +12,11 @@ class Pagamento(models.Model):
         ('P', 'Pix'),
     ]
 
+    STATUS_CHOICES = [
+        ('P', 'Pendente'),
+        ('C', 'Concluído'),
+    ]
+
     idPagamento = models.AutoField(primary_key=True, verbose_name='ID Pagamento')
 
     valorHora = models.DecimalField('Valor Hora', max_digits=6, decimal_places=2, default=Decimal('5.00'))
@@ -41,12 +46,12 @@ class Pagamento(models.Model):
     )
 
     placa = models.CharField('Placa', max_length=10, help_text='Placa do veículo')
-
     valorFinal = models.DecimalField('Valor Final', max_digits=8, decimal_places=2, default=Decimal('0.00'))
-
     data_pagamento = models.DateTimeField('Data do Pagamento', auto_now_add=True)
-
     multa_aplicada = models.BooleanField('Aplicar Multa?', default=False)
+    valor_multa = models.DecimalField('Valor da Multa (R$)', max_digits=8, decimal_places=2, default=Decimal('0.00'))
+    valor_desconto = models.DecimalField('Desconto (R$)', max_digits=8, decimal_places=2, default=Decimal('0.00'))
+    status = models.CharField('Status do pagamento', max_length=1, choices=STATUS_CHOICES, default='P')
 
     class Meta:
         verbose_name = 'Pagamento'
@@ -56,31 +61,32 @@ class Pagamento(models.Model):
         return f'Pagamento {self.idPagamento} - {self.dono.nome}'
 
     def calcular_valor_final(self):
-        """
-        Calcula o valor final com base na estadia, método de pagamento e multa.
-        """
         if not self.estadia.entrada or not self.estadia.saida:
             raise ValidationError("A estadia deve possuir entrada e saída para calcular o valor final.")
 
-        # Calcula a diferença de tempo em horas
         delta = self.estadia.saida - self.estadia.entrada
-        horas = Decimal(delta.total_seconds() / 3600)
-        horas = horas.quantize(Decimal('1.00'))  # arredonda para 2 casas
+        horas = Decimal(delta.total_seconds() / 3600).quantize(Decimal('1.00'))
 
         valor_base = horas * self.valorHora
         valor_final = valor_base
 
-        # Aplica desconto de 10% se for Débito ou Crédito
-        if self.metodo in ['D', 'C']:
-            valor_final *= Decimal('0.90')
+        self.valor_desconto = Decimal('0.00')
+        self.valor_multa = Decimal('0.00')
 
-        # Aplica multa de 10% se marcada
+# Aqui rola o famoso dixconto de 10% pra quem eu for com a cara
+        if self.metodo in ['D', 'P']:
+            desconto = valor_base * Decimal('0.10')
+            valor_final -= desconto
+            self.valor_desconto = desconto.quantize(Decimal('0.01'))
+
+# Aqui a pessoa se ferrou, multa de 10%
         if self.multa_aplicada:
-            valor_final *= Decimal('1.10')
+            multa_valor = valor_final * Decimal('0.10')
+            valor_final += multa_valor
+            self.valor_multa = multa_valor.quantize(Decimal('0.01'))
 
         self.valorFinal = valor_final.quantize(Decimal('0.01'))
-
     def save(self, *args, **kwargs):
-        # Recalcula o valor sempre que salvar
+# Só o treco pra recalcular
         self.calcular_valor_final()
         super().save(*args, **kwargs)
