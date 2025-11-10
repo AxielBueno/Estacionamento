@@ -13,9 +13,16 @@ class Vaga(models.Model):
         ('Grande', 'Grande'),
     ]
 
+    STATUS_CHOICES = [
+        ('Livre', 'Livre'),
+        ('Ocupada', 'Ocupada'),
+    ]
+
     numero = models.CharField('Número', max_length=10, help_text='Número da vaga')
     tamanho = models.CharField('Tamanho', max_length=20, choices=TAMANHO_CHOICES, help_text='Tamanho da vaga (ex: Pequena, Média, Grande)')
     andar = models.CharField('Andar', max_length=1, choices=ANDAR_CHOICES, help_text='Andar da vaga')
+    status = models.CharField('Status', max_length=10, choices=STATUS_CHOICES, default='Livre', help_text='Status atual da vaga')
+
 
     class Meta:
         verbose_name = 'Vaga'

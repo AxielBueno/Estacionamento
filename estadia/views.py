@@ -9,11 +9,13 @@ from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
 from .models import Estadia
 
+
 def registrar_saida(request, pk):
     estadia = get_object_or_404(Estadia, pk=pk)
     estadia.saida = timezone.now()
     estadia.save()
     return redirect('estadias')
+
 
 class EstadiaView(ListView):
     model = Estadia
@@ -34,12 +36,24 @@ class EstadiaView(ListView):
             messages.info(self.request, 'Não existem estadias cadastradas.')
             return Estadia.objects.none()
 
+
 class EstadiaAddView(SuccessMessageMixin, CreateView):
     model = Estadia
     form_class = EstadiaModelForm
     template_name = 'estadia_forms.html'
     success_url = reverse_lazy('estadias')
     success_message = 'Estadia cadastrada com sucesso.'
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+
+        # Atualiza a vaga relacionada
+        vaga = self.object.vaga
+        vaga.status = 'Ocupada'
+        vaga.save()
+
+        return response
+
 
 class EstadiaUpdateView(SuccessMessageMixin, UpdateView):
     model = Estadia
@@ -48,7 +62,32 @@ class EstadiaUpdateView(SuccessMessageMixin, UpdateView):
     success_url = reverse_lazy('estadias')
     success_message = 'Estadia atualizada com sucesso.'
 
+
 class EstadiaDeleteView(SuccessMessageMixin, DeleteView):
     model = Estadia
     template_name = 'estadia_apagar.html'
     success_url = reverse_lazy('estadias')
+
+
+def finalizar_estadia(request, pk):
+    estadia = get_object_or_404(Estadia, pk=pk)
+
+    if estadia.status == 'Finalizada':
+        messages.info(request, "Esta estadia já foi finalizada.")
+        return redirect('estadias')
+
+    estadia.saida = timezone.now()
+    estadia.status = 'Finalizada'
+    estadia.save()
+
+    vaga = estadia.vaga
+    vaga.status = 'Livre'
+    vaga.save()
+
+    # Atualiza a vaga pra Livre, se quiser automatizar isso
+    if estadia.vaga:
+        estadia.vaga.status = 'Livre'
+        estadia.vaga.save()
+
+    messages.success(request, f'Estadia {estadia.idEstadia} finalizada com sucesso!')
+    return redirect('estadias')

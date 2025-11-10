@@ -7,4 +7,5 @@ urlpatterns = [
     path('<int:pk>/estadia/editar', EstadiaUpdateView.as_view(), name='estadia_editar'),
     path('<int:pk>/estadia/apagar', EstadiaDeleteView.as_view(), name='estadia_apagar'),
     path('registrar_saida/<int:pk>/', registrar_saida, name='registrar_saida'),
+    path('estadias/finalizar/<int:pk>/', finalizar_estadia, name='finalizar_estadia'),
 ]

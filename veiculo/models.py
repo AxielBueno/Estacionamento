@@ -8,7 +8,7 @@ TIPO_VEICULO = [
 ]
 
 class Veiculo(models.Model):
-    placa = models.CharField('Placa', max_length=10, unique=True, help_text='Placa do veículo')
+    placa = models.CharField('Placa', max_length=5, unique=True, help_text='Placa do veículo')
     tipo = models.CharField('Tipo de Veículo', max_length=20, choices=TIPO_VEICULO)
     dono = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name='veiculos', default=1)
 

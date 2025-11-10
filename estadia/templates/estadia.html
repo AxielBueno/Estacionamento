@@ -61,10 +61,14 @@
                                 <a href="{% url 'estadia_apagar' estadia.pk %}" title="Apagar" class="text-danger">
                                     <i class="fas fa-trash-alt"></i>
                                 </a>
+                                {% if estadia.status != 'Finalizada' %}
+                                    <a href="{% url 'finalizar_estadia' estadia.pk %}" class="btn btn-warning btn-sm">
+                                        Finalizar
+                                    </a>
+                                {% endif %}
                                 {% if not estadia.saida %}
                                     <a href="{% url 'registrar_saida' estadia.pk %}" class="text-success"
                                        title="Registrar Saída">
-                                        <i class="fas fa-sign-out-alt"></i>
                                     </a>
                                 {% endif %}
                             </td>
