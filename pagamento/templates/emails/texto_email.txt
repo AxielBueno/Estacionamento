@@ -1,0 +1,14 @@
+Olá {{ cliente }}!!
+
+Responsável: {{ responsavel }}
+Veículo: {{ veiculo }}
+Entrada: {{ entrada }}
+Saída: {{ saida }}
+Permanência: {{ permanencia }}
+Multa: {{ multa }}
+Meio de pagamento: {{ pagamento }}
+Desconto: {{ desconto }}
+Valor final do serviço: {{ valor_final }}
+
+Agradecemos pela sua preferência. Volte sempre!!!
+Edens

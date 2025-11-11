@@ -3,183 +3,186 @@
 {% load static %}
 {% block content %}
 
-<div class="container-flex text-center text-white" style="background-color: #121212; padding: 5px">
-    <h4>Aqui você poderá realizar cadastros, edições e apagar pagamentos existentes</h4>
-</div>
-
-<section class="section">
-    <div class="container mb-5 mt-5">
-        <form action="" method="GET" class="d-flex justify-content-start align-items-center gap-2">
-            <input class="form-control" type="text" name="buscar" value="{{ request.GET.buscar }}"
-                   placeholder="Digite o nome do dono" style="max-width: 900px;">
-            <button type="submit" class="btn btn-dark">Buscar</button>
-
-            <a href="{% url 'pagamento_adicionar' %}" class="btn btn-dark">
-                <i class="fas fa-money-bill-wave"></i> Registrar Pagamento
-            </a>
-        </form>
+    <div class="container-flex text-center text-white" style="background-color: #121212; padding: 5px">
+        <h4>Aqui você poderá realizar cadastros, edições e apagar pagamentos existentes</h4>
     </div>
-</section>
 
-{% if object_list %}
-<div class="card-body" style="background-color: #322f30">
-    <h3 class="text-center text-white mb-4">Pagamentos Registrados</h3>
-    <div class="table-responsive">
-        <table class="table table-hover">
-            <thead class="table-secondary">
-                <tr>
-                    <th>Dono</th>
-                    <th>Placa</th>
-                    <th>Estadia</th>
-                    <th>Método</th>
-                    <th>Multa Aplicada?</th>
-                    <th>Multa (R$)</th>
-                    <th>Desconto (R$)</th>
-                    <th>Valor Final (R$)</th>
-                    <th>Data do Pagamento</th>
-                    <th>Status</th>
-                    <th style="width: 120px; text-align: center">Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for pagamento in object_list %}
-                <tr>
-                    <td>
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#modal{{ pagamento.idPagamento }}">
-                            {{ pagamento.dono.nome }}
-                        </a>
-                    </td>
-                    <td>{{ pagamento.placa }}</td>
-                    <td>
-                        {% if pagamento.estadia %}
-                            Estadia {{ pagamento.estadia.idEstadia }}
-                        {% else %}
-                            -
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if pagamento.metodo == 'D' %}
-                            Débito
-                        {% elif pagamento.metodo == 'C' %}
-                            Crédito
-                        {% else %}
-                            Pix
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if pagamento.multa_aplicada %}
-                            Sim
-                        {% else %}
-                            Não
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if pagamento.valor_multa > 0 %}
-                            R$ {{ pagamento.valor_multa }}
-                        {% else %}
-                            -
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if pagamento.valor_desconto > 0 %}
-                            R$ {{ pagamento.valor_desconto }}
-                        {% else %}
-                            -
-                        {% endif %}
-                    </td>
-                    <td>R$ {{ pagamento.valorFinal }}</td>
-                    <td>{{ pagamento.data_pagamento|date:"d/m/Y H:i" }}</td>
+    <section class="section">
+        <div class="container mb-5 mt-5">
+            <form action="" method="GET" class="d-flex justify-content-start align-items-center gap-2">
+                <input class="form-control" type="text" name="buscar" value="{{ request.GET.buscar }}"
+                       placeholder="Digite o nome do dono" style="max-width: 900px;">
+                <button type="submit" class="btn btn-dark">Buscar</button>
 
-                    <!-- Status -->
-                    <td>
-                        {% if pagamento.status == 'P' %}
-                            <span class="badge bg-warning text-dark">Pendente</span>
-                        {% else %}
-                            <span class="badge bg-success">Concluído</span>
-                        {% endif %}
-                    </td>
+                <a href="{% url 'pagamento_adicionar' %}" class="btn btn-dark">
+                    <i class="fas fa-money-bill-wave"></i> Registrar Pagamento
+                </a>
+            </form>
+        </div>
+    </section>
 
-                    <!-- Ações -->
-                    <td class="text-center">
-                        {% if pagamento.status == 'P' %}
-                            <a href="{% url 'pagamento_concluir' pagamento.pk %}" class="me-2 text-success" title="Marcar como concluído">
-                                <i class="fas fa-check-circle"></i>
-                            </a>
-                        {% endif %}
-                        <a href="{% url 'pagamento_editar' pagamento.pk %}" class="me-2" title="Editar">
-                            <i class="fas fa-edit"></i>
-                        </a>
-                        <a href="{% url 'pagamento_apagar' pagamento.pk %}" title="Apagar" class="text-danger">
-                            <i class="fas fa-trash-alt"></i>
-                        </a>
-                    </td>
-                </tr>
+    {% if object_list %}
+        <div class="card-body" style="background-color: #322f30">
+            <h3 class="text-center text-white mb-4">Pagamentos Registrados</h3>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-secondary">
+                    <tr>
+                        <th>Dono</th>
+                        <th>Placa</th>
+                        <th>Estadia</th>
+                        <th>Método</th>
+                        <th>Multa Aplicada?</th>
+                        <th>Multa (R$)</th>
+                        <th>Desconto (R$)</th>
+                        <th>Valor Final (R$)</th>
+                        <th>Data do Pagamento</th>
+                        <th>Status</th>
+                        <th style="width: 120px; text-align: center">Ações</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for pagamento in object_list %}
+                        <tr>
+                            <td>
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#modal{{ pagamento.idPagamento }}">
+                                    {{ pagamento.dono.nome }}
+                                </a>
+                            </td>
+                            <td>{{ pagamento.placa }}</td>
+                            <td>
+                                {% if pagamento.estadia %}
+                                    Estadia {{ pagamento.estadia.idEstadia }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if pagamento.metodo == 'D' %}
+                                    Débito
+                                {% elif pagamento.metodo == 'C' %}
+                                    Crédito
+                                {% else %}
+                                    Pix
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if pagamento.multa_aplicada %}
+                                    Sim
+                                {% else %}
+                                    Não
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if pagamento.valor_multa > 0 %}
+                                    R$ {{ pagamento.valor_multa }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if pagamento.valor_desconto > 0 %}
+                                    R$ {{ pagamento.valor_desconto }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>R$ {{ pagamento.valorFinal }}</td>
+                            <td>{{ pagamento.data_pagamento|date:"d/m/Y H:i" }}</td>
 
-                <!-- Modal Detalhes -->
-                <div class="modal fade" id="modal{{ pagamento.idPagamento }}" tabindex="-1"
-                     aria-labelledby="modalLabel{{ pagamento.idPagamento }}" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="modalLabel{{ pagamento.idPagamento }}">
-                                    Pagamento #{{ pagamento.idPagamento }} - {{ pagamento.dono.nome }}
-                                </h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Fechar"></button>
-                            </div>
-                            <div class="modal-body">
-                                <p><strong>Placa:</strong> {{ pagamento.placa }}</p>
-                                <p><strong>Método:</strong>
-                                    {% if pagamento.metodo == 'D' %}
-                                        Débito
-                                    {% elif pagamento.metodo == 'C' %}
-                                        Crédito
-                                    {% else %}
-                                        Pix
-                                    {% endif %}
-                                </p>
-                                <p><strong>Valor Hora:</strong> R$ {{ pagamento.valorHora }}</p>
-                                <p><strong>Desconto:</strong>
-                                    {% if pagamento.valor_desconto > 0 %}
-                                        R$ {{ pagamento.valor_desconto }}
-                                    {% else %}
-                                        Nenhum
-                                    {% endif %}
-                                </p>
-                                <p><strong>Multa Aplicada:</strong>
-                                    {% if pagamento.multa_aplicada %}
-                                        Sim ({{ pagamento.multa }}%) — R$ {{ pagamento.valor_multa }}
-                                    {% else %}
-                                        Não
-                                    {% endif %}
-                                </p>
-                                <p><strong>Valor Final:</strong> R$ {{ pagamento.valorFinal }}</p>
-                                <p><strong>Status:</strong>
-                                    {% if pagamento.status == 'P' %}
-                                        Pendente
-                                    {% else %}
-                                        Concluído
-                                    {% endif %}
-                                </p>
-                                <p><strong>Data do Pagamento:</strong> {{ pagamento.data_pagamento|date:"d/m/Y H:i" }}</p>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            <!-- Status -->
+                            <td>
+                                {% if pagamento.status == 'P' %}
+                                    <span class="badge bg-warning text-dark">Pendente</span>
+                                {% else %}
+                                    <span class="badge bg-success">Concluído</span>
+                                {% endif %}
+                            </td>
+
+                            <!-- Ações -->
+                            <td class="text-center">
+                                {% if pagamento.status == 'P' %}
+                                    <a href="{% url 'pagamento_concluir' pagamento.pk %}" class="me-2 text-success"
+                                       title="Marcar como concluído">
+                                        <i class="fas fa-check-circle"></i>
+                                    </a>
+                                {% endif %}
+                                <a href="{% url 'pagamento_editar' pagamento.pk %}" class="me-2" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'pagamento_apagar' pagamento.pk %}" title="Apagar" class="text-danger">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </td>
+                        </tr>
+
+                        <!-- Modal Detalhes -->
+                        <div class="modal fade" id="modal{{ pagamento.idPagamento }}" tabindex="-1"
+                             aria-labelledby="modalLabel{{ pagamento.idPagamento }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="modalLabel{{ pagamento.idPagamento }}">
+                                            Pagamento #{{ pagamento.idPagamento }} - {{ pagamento.dono.nome }}
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Fechar"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p><strong>Placa:</strong> {{ pagamento.placa }}</p>
+                                        <p><strong>Método:</strong>
+                                            {% if pagamento.metodo == 'D' %}
+                                                Débito
+                                            {% elif pagamento.metodo == 'C' %}
+                                                Crédito
+                                            {% else %}
+                                                Pix
+                                            {% endif %}
+                                        </p>
+                                        <p><strong>Valor Hora:</strong> R$ {{ pagamento.valorHora }}</p>
+                                        <p><strong>Desconto:</strong>
+                                            {% if pagamento.valor_desconto > 0 %}
+                                                R$ {{ pagamento.valor_desconto }}
+                                            {% else %}
+                                                Nenhum
+                                            {% endif %}
+                                        </p>
+                                        <p><strong>Multa Aplicada:</strong>
+                                            {% if pagamento.multa_aplicada %}
+                                                Sim ({{ pagamento.multa }}%) — R$ {{ pagamento.valor_multa }}
+                                            {% else %}
+                                                Não
+                                            {% endif %}
+                                        </p>
+                                        <p><strong>Valor Final:</strong> R$ {{ pagamento.valorFinal }}</p>
+                                        <p><strong>Status:</strong>
+                                            {% if pagamento.status == 'P' %}
+                                                Pendente
+                                            {% else %}
+                                                Concluído
+                                            {% endif %}
+                                        </p>
+                                        <p><strong>Data do
+                                            Pagamento:</strong> {{ pagamento.data_pagamento|date:"d/m/Y H:i" }}</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
 
-    <div class="d-flex justify-content-center">
-        {% bootstrap_pagination object_list size="sm" %}
-    </div>
-</div>
-{% else %}
-    <p class="text-center mt-4">Nenhum pagamento encontrado.</p>
-{% endif %}
+            <div class="d-flex justify-content-center">
+                {% bootstrap_pagination object_list size="sm" %}
+            </div>
+        </div>
+    {% else %}
+        <p class="text-center mt-4">Nenhum pagamento encontrado.</p>
+    {% endif %}
 
 {% endblock %}

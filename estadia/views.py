@@ -8,6 +8,9 @@ from .forms import EstadiaModelForm
 from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
 from .models import Estadia
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.shortcuts import redirect
 
 
 def registrar_saida(request, pk):
@@ -91,3 +94,5 @@ def finalizar_estadia(request, pk):
 
     messages.success(request, f'Estadia {estadia.idEstadia} finalizada com sucesso!')
     return redirect('estadias')
+
+
