@@ -17,4 +17,4 @@ class Veiculo(models.Model):
         verbose_name_plural = 'Veículos'
 
     def __str__(self):
-        return f"{self.placa}"
+        return f'{self.placa} - {self.tipo}'

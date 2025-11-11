@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 class AgendamentoModelForm(forms.ModelForm):
     class Meta:
         model = Agendamento
-        fields = ['placa', 'dono', 'funcionario', 'entrada', 'saida_prevista', 'saida']
+        fields = ['placa', 'dono', 'funcionario', 'entrada', 'saida_prevista',]
 
         widgets = {
             'entrada': forms.DateTimeInput(attrs={'type': 'datetime-local'}),

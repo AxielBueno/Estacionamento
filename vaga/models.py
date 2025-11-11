@@ -32,4 +32,4 @@ class Vaga(models.Model):
         ]
 
     def __str__(self):
-        return f'Vaga {self.numero} - {self.get_andar_display()}'
+        return f'Vaga {self.numero} - {self.andar}'

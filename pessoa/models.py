@@ -24,3 +24,6 @@ class Cliente(Pessoa):
 
     def __str__(self):
         return super().nome
+
+    def tem_empresa(self):
+        return bool(self.empresa)

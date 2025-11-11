@@ -67,26 +67,37 @@ class Pagamento(models.Model):
         delta = self.estadia.saida - self.estadia.entrada
         horas = Decimal(delta.total_seconds() / 3600).quantize(Decimal('1.00'))
 
+        # isso daqui é pra basicamente que o cliente pague o valor de 1h, mesmo que use o estacionamento por menos de 1...
+        if horas < 1:
+            horas = Decimal('1.00')
+
         valor_base = horas * self.valorHora
         valor_final = valor_base
 
         self.valor_desconto = Decimal('0.00')
         self.valor_multa = Decimal('0.00')
 
-# Aqui rola o famoso dixconto de 10% pra quem eu for com a cara
+        # Aqui rola o famoso dixconto de 10% pra quem eu for com a cara
         if self.metodo in ['D', 'P']:
             desconto = valor_base * Decimal('0.10')
             valor_final -= desconto
             self.valor_desconto = desconto.quantize(Decimal('0.01'))
 
-# Aqui a pessoa se ferrou, multa de 10%
+        # Desconto para quem é de uma empresa
+        if self.dono.empresa.exists():
+            desconto_empresa = valor_final * Decimal('0.20')
+            valor_final -= desconto_empresa
+            self.valor_desconto += desconto_empresa.quantize(Decimal('0.01'))
+
+        # Aqui a pessoa se ferrou, multa de 10%
         if self.multa_aplicada:
             multa_valor = valor_final * Decimal('0.10')
             valor_final += multa_valor
             self.valor_multa = multa_valor.quantize(Decimal('0.01'))
 
         self.valorFinal = valor_final.quantize(Decimal('0.01'))
+
     def save(self, *args, **kwargs):
-# Só o treco pra recalcular
+        # Só o treco pra recalcular
         self.calcular_valor_final()
         super().save(*args, **kwargs)

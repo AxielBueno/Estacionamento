@@ -14,6 +14,13 @@ class PagamentoModelForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['estadia'].queryset = Estadia.objects.filter(pagamento__isnull=True)
 
+        #aqui bloqueio os campos do valor da hora e multa
+        self.fields['valorHora'].disabled = True
+        self.fields['multa'].disabled = True
+
+        #aqui não deixo aparecer estadias em andamento
+        self.fields['estadia'].queryset = Estadia.objects.filter(status='Finalizada')
+
     def clean(self):
         cleaned_data = super().clean()
         estadia = cleaned_data.get('estadia')
