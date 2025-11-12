@@ -75,10 +75,17 @@
                                           style="pointer-events: none; opacity: 0.4;"><i
                                             class="fas fa-check-circle"></i></span>
                                 {% endif %}
-                                <a href="#" class="btn btn-warning btn-sm" data-bs-toggle="modal"
-                                   data-bs-target="#modalPagar{{ agendamento.id }}" title="Pagar">
-                                    Pagar
-                                </a>
+                                {% if agendamento.pago %}
+                                    <button class="btn btn-secondary btn-sm" disabled title="Já pago">
+                                        Pago
+                                    </button>
+                                {% else %}
+                                    <a href="#" class="btn btn-warning btn-sm" data-bs-toggle="modal"
+                                       data-bs-target="#modalPagar{{ agendamento.id }}" title="Pagar">
+                                        Pagar
+                                    </a>
+                                {% endif %}
+
                             </td>
                         </tr>
 
@@ -166,7 +173,15 @@
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                                             Cancelar
                                         </button>
-                                        <button type="button" class="btn btn-success" data-bs-dismiss="modal">Pagar
+                                        <button
+                                                type="button"
+                                                class="btn btn-success text-white"
+                                                onclick="
+                                                        const modalidade = document.getElementById('modalidade{{ agendamento.id }}').value;
+                                                        const desconto = document.getElementById('desconto{{ agendamento.id }}').innerText.replace('R$ ', '').replace(',', '.');
+                                                        window.location.href = `{% url 'pagamento_concluir' agendamento.pk %}?modalidade=${modalidade}&desconto=${desconto}`;
+                                                        ">
+                                            Pagar
                                         </button>
                                     </div>
                                 </div>

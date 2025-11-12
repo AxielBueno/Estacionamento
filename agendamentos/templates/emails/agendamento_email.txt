@@ -1,0 +1,9 @@
+Pagamento Concluído ✅
+
+Responsável: {{ responsavel }}
+Veículo: {{ veiculo }}
+Meio de Pagamento: {{ pagamento }}
+Desconto Aplicado: {{ desconto }}
+Total Pago: {{ valor_final }}
+
+Obrigado por utilizar o Estacionamento Edens!

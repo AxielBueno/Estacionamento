@@ -6,6 +6,8 @@ from django.core.paginator import Paginator
 from django.urls import reverse_lazy
 from .models import Veiculo
 from .forms import VeiculoModelForm
+from django.db.models import Q
+
 
 class VeiculoView(ListView):
     model = Veiculo
@@ -16,7 +18,10 @@ class VeiculoView(ListView):
         qs = super(VeiculoView, self).get_queryset()
 
         if buscar:
-            qs = qs.filter(placa__icontains=buscar)
+            qs = qs.filter(
+                Q(placa__icontains=buscar) |
+                Q(dono__nome__icontains=buscar)
+            )
 
         if qs.count() > 0:
             paginator = Paginator(qs, 10)

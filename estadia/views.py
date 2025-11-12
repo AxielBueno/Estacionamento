@@ -11,8 +11,10 @@ from .models import Estadia
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.shortcuts import redirect
+from django.db.models import Q
 
 
+# DEF só pra pegar o tempo atual e registrar
 def registrar_saida(request, pk):
     estadia = get_object_or_404(Estadia, pk=pk)
     estadia.saida = timezone.now()
@@ -29,7 +31,9 @@ class EstadiaView(ListView):
         qs = super().get_queryset()
 
         if buscar:
-            qs = qs.filter(idEstadia__icontains=buscar) | qs.filter(entrada__icontains=buscar)
+            qs = qs.filter(
+                Q(veiculo__placa__icontains=buscar)
+            )
 
         if qs.exists():
             paginator = Paginator(qs, 10)
@@ -50,7 +54,6 @@ class EstadiaAddView(SuccessMessageMixin, CreateView):
     def form_valid(self, form):
         response = super().form_valid(form)
 
-        # Atualiza a vaga relacionada
         vaga = self.object.vaga
         vaga.status = 'Ocupada'
         vaga.save()
@@ -87,7 +90,6 @@ def finalizar_estadia(request, pk):
     vaga.status = 'Livre'
     vaga.save()
 
-    # Atualiza a vaga pra Livre, se quiser automatizar isso
     if estadia.vaga:
         estadia.vaga.status = 'Livre'
         estadia.vaga.save()

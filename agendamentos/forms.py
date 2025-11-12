@@ -30,6 +30,8 @@ class AgendamentoModelForm(forms.ModelForm):
             },
         }
 
+
+    # DEF pra encher o saco de quem tentar COLOCAR A POR#A DE UMA SAIDA MENOR QUE A ENTRADA
     def clean(self):
         cleaned_data = super().clean()
         entrada = cleaned_data.get('entrada')

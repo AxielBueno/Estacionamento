@@ -5,10 +5,71 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from django.urls import reverse_lazy
 from django.utils import timezone
-from .models import Agendamento
+from django.db.models import Q
 from .forms import *
+from decimal import Decimal
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib import messages
+from django.template.loader import render_to_string
+from django.core.mail import send_mail
+from .models import Agendamento
+
+# DEF que manda email
+def concluir_agendamento(request, pk):
+    agendamento = get_object_or_404(Agendamento, pk=pk)
+
+    # Isso daqui serve pra pegar os dados que eu taquei no modal do html
+    modalidade = request.GET.get('modalidade')
+    desconto_str = request.GET.get('desconto', '0').replace(',', '.')
+    try:
+        desconto = Decimal(str(desconto_str))
+    except:
+        desconto = Decimal('0')
+
+    agendamento.metodo_pagamento = modalidade
+    agendamento.valor_desconto = desconto
+    agendamento.valor_final = agendamento.valor - desconto
+    agendamento.status = 'finalizado'
+    agendamento.saida = timezone.now()
+    agendamento.pago = True
+    agendamento.save()
+
+    email = [agendamento.dono.email] if getattr(agendamento.dono, 'email', None) else []
+
+    if email:
+        dados = {
+            'cliente': agendamento.dono.nome,
+            'responsavel': getattr(agendamento.placa.dono, 'nome', agendamento.dono.nome)
+                            if hasattr(agendamento.placa, 'dono') else agendamento.dono.nome,
+            'veiculo': getattr(agendamento.placa, 'placa', 'N/A'),
+            'entrada': agendamento.entrada.strftime("%d/%m/%Y %H:%M") if agendamento.entrada else 'N/A',
+            'saida_prevista': agendamento.saida_prevista.strftime("%d/%m/%Y %H:%M") if agendamento.saida_prevista else 'N/A',
+            'saida': agendamento.saida.strftime("%d/%m/%Y %H:%M") if agendamento.saida else 'N/A',
+            'pagamento': agendamento.metodo_pagamento.capitalize() if agendamento.metodo_pagamento else 'N/A',
+            'desconto': f"R$ {agendamento.valor_desconto:.2f}",
+            'valor_final': f"R$ {agendamento.valor_final:.2f}",
+        }
+
+        texto_email = render_to_string('emails/agendamento_email.txt', dados)
+        html_email = render_to_string('emails/agendamento_email.html', dados)
+
+        send_mail(
+            subject='Estacionamento Edens - Pagamento Concluído',
+            message=texto_email,
+            from_email='axiel.bueno@acad.ufsm.br',
+            recipient_list=email,
+            html_message=html_email,
+            fail_silently=True,
+        )
+
+        messages.success(request, f'O pagamento do agendamento #{agendamento.id} foi concluído e o e-mail enviado!')
+    else:
+        messages.success(request, f'O pagamento do agendamento #{agendamento.id} foi concluído com sucesso (sem e-mail enviado).')
+
+    return redirect('agendamentos')
 
 
+# DEF que finaliza o agendamento colocando a saida final verdadeira e tals
 def finalizar_agendamento(request, pk):
     agendamento = get_object_or_404(Agendamento, pk=pk)
     if agendamento.status != 'finalizado':
@@ -21,6 +82,7 @@ def finalizar_agendamento(request, pk):
         messages.info(request, 'Agendamento já está finalizado.')
     return redirect('agendamentos')
 
+
 class AgendamentoView(ListView):
     model = Agendamento
     template_name = 'agendamento.html'
@@ -30,7 +92,10 @@ class AgendamentoView(ListView):
         qs = super().get_queryset()
 
         if buscar:
-            qs = qs.filter(placa__icontains=buscar) | qs.filter(dono__icontains=buscar)
+            qs = qs.filter(
+                Q(placa__placa__icontains=buscar) |
+                Q(dono__nome__icontains=buscar)
+            )
 
         if qs.exists():
             paginator = Paginator(qs, 10)
@@ -40,12 +105,14 @@ class AgendamentoView(ListView):
             messages.info(self.request, 'Não existem agendamentos cadastrados.')
             return Agendamento.objects.none()
 
+
 class AgendamentoAddView(SuccessMessageMixin, CreateView):
     model = Agendamento
     form_class = AgendamentoModelForm
     template_name = 'agendamento_forms.html'
     success_url = reverse_lazy('agendamentos')
     success_message = 'Agendamento cadastrado com sucesso.'
+
 
 class AgendamentoUpdateView(SuccessMessageMixin, UpdateView):
     model = Agendamento
@@ -54,8 +121,8 @@ class AgendamentoUpdateView(SuccessMessageMixin, UpdateView):
     success_url = reverse_lazy('agendamentos')
     success_message = 'Agendamento atualizado com sucesso.'
 
+
 class AgendamentoDeleteView(SuccessMessageMixin, DeleteView):
     model = Agendamento
     template_name = 'agendamento_apagar.html'
     success_url = reverse_lazy('agendamentos')
-

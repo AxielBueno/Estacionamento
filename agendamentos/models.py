@@ -12,12 +12,13 @@ class Agendamento(models.Model):
     placa = models.ForeignKey(Veiculo, on_delete=models.CASCADE, related_name='agendamentos', verbose_name='Placa')
     dono = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name='agendamentos',verbose_name='Dono')
     funcionario = models.ForeignKey(Funcionario, on_delete=models.CASCADE, related_name='agendamentos',verbose_name='Funcionario')
-
     entrada = models.DateTimeField('Entrada', help_text='Data e hora de entrada')
     saida_prevista = models.DateTimeField('Saída Prevista', help_text='Data e hora prevista de saída')
     saida = models.DateTimeField('Saída Real', null=True, blank=True, help_text='Data e hora real de saída')
-
     valor = models.DecimalField('Valor', max_digits=8, decimal_places=2, editable=False, default=0.00)
+    pago = models.BooleanField(default=False)
+    metodo_pagamento = models.CharField(max_length=20, null=True, blank=True)
+    valor_desconto = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     STATUS_CHOICES = [
         ('andamento', 'Em Andamento'),
@@ -35,6 +36,8 @@ class Agendamento(models.Model):
     def __str__(self):
         return f'Agendamento {self.placa} - {self.dono.nome}'
 
+
+    #Basicamente to calculando valores do tempo aqui
     def save(self, *args, **kwargs):
         if self.entrada:
             fim = self.saida if self.saida else self.saida_prevista
@@ -48,6 +51,7 @@ class Agendamento(models.Model):
             self.valor = Decimal('0.00')
         super().save(*args, **kwargs)
 
+    #Aqui impossibilito a saida prevista ser menor que a entrada, pq né
     def clean(self):
         from django.core.exceptions import ValidationError
         if self.saida_prevista and self.entrada and self.saida_prevista < self.entrada:

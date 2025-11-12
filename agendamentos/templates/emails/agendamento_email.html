@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Pagamento Concluído - Edens Park</title>
+    <title>Agendamento Concluído - Edens Park</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -46,12 +46,12 @@
 <body>
     <div class="container">
         <h2>Olá {{ cliente }}!</h2>
-        <p>O seu pagamento foi efetuado com sucesso e está tudo certo ✅</p>
-        <p>Abaixo estão os detalhes da sua estadia:</p>
+        <p>O seu agendamento foi finalizado com sucesso ✅</p>
+        <p>Abaixo estão os detalhes:</p>
 
         <table>
             <tr>
-                <td><strong>Responsável:</strong></td>
+                <td><strong>Responsável pelo veículo:</strong></td>
                 <td>{{ responsavel }}</td>
             </tr>
             <tr>
@@ -63,16 +63,12 @@
                 <td>{{ entrada }}</td>
             </tr>
             <tr>
-                <td><strong>Saída:</strong></td>
+                <td><strong>Saída prevista:</strong></td>
+                <td>{{ saida_prevista }}</td>
+            </tr>
+            <tr>
+                <td><strong>Saída real:</strong></td>
                 <td>{{ saida }}</td>
-            </tr>
-            <tr>
-                <td><strong>Permanência:</strong></td>
-                <td>{{ permanencia }}</td>
-            </tr>
-            <tr>
-                <td><strong>Multa:</strong></td>
-                <td>{{ multa }}</td>
             </tr>
             <tr>
                 <td><strong>Meio de pagamento:</strong></td>

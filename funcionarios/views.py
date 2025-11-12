@@ -4,6 +4,7 @@ from .models import Funcionario
 from .forms import FuncionarioModelForm
 from django.core.paginator import Paginator
 from django.contrib import messages
+from django.db.models import Q
 
 class FuncionarioView(ListView):
     model = Funcionario
@@ -14,7 +15,10 @@ class FuncionarioView(ListView):
         qs = super(FuncionarioView, self).get_queryset()
 
         if buscar:
-            qs = qs.filter(nome__icontains=buscar)
+            qs = qs.filter(
+                Q(nome__icontains=buscar) |
+                Q(cpf__icontains=buscar)
+            )
 
         if qs.count() > 0:
             paginator = Paginator(qs, 10)

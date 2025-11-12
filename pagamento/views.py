@@ -16,10 +16,9 @@ def concluir_pagamento(request, pk):
     pagamento.status = 'C'
     pagamento.save()
 
-    # --- Envio do e-mail automático ---
     email = [pagamento.dono.email] if pagamento.dono.email else []
 
-    if email:  # só envia se o cliente tiver e-mail cadastrado
+    if email:
         dados = {
             'cliente': pagamento.dono.nome,
             'responsavel': pagamento.estadia.vaga.funcionario.nome if hasattr(pagamento.estadia.vaga, 'funcionario') and pagamento.estadia.vaga.funcionario else pagamento.dono.nome,
@@ -37,9 +36,9 @@ def concluir_pagamento(request, pk):
         html_email = render_to_string('emails/texto_email.html', dados)
 
         send_mail(
-            subject='Edens Park - Pagamento Concluído',
+            subject='Estacionamento Edens - Pagamento Concluído',
             message=texto_email,
-            from_email='EMAIL@gmail.com',  # altere conforme suas configs
+            from_email='axiel.bueno@acad.ufsm.br.com',
             recipient_list=email,
             html_message=html_email,
             fail_silently=False,
