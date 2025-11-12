@@ -79,6 +79,11 @@
                                     <button class="btn btn-secondary btn-sm" disabled title="Já pago">
                                         Pago
                                     </button>
+                                {% elif agendamento.status != 'finalizado' %}
+                                    <button class="btn btn-secondary btn-sm" disabled
+                                            title="Finalize o agendamento antes de pagar">
+                                        Pagar
+                                    </button>
                                 {% else %}
                                     <a href="#" class="btn btn-warning btn-sm" data-bs-toggle="modal"
                                        data-bs-target="#modalPagar{{ agendamento.id }}" title="Pagar">
