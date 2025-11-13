@@ -2,11 +2,14 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from .models import Funcionario
 from .forms import FuncionarioModelForm
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.paginator import Paginator
 from django.contrib import messages
 from django.db.models import Q
 
-class FuncionarioView(ListView):
+class FuncionarioView(PermissionRequiredMixin, ListView):
+    permission_required = 'funcionarios.view_funcionario'
+    permission_denied_message = 'Visualizar funcionario'
     model = Funcionario
     template_name = 'funcionarios.html'
 
@@ -29,21 +32,27 @@ class FuncionarioView(ListView):
 
 
 
-class FuncionarioAddView(CreateView):
+class FuncionarioAddView(PermissionRequiredMixin, CreateView):
+    permission_required = 'funcionarios.add_funcionario'
+    permission_denied_message = 'Cadastrar funcionario'
     model = Funcionario
     form_class = FuncionarioModelForm
     template_name = 'funcionario_forms.html'
     success_url = reverse_lazy('funcionarios')
 
 
-class FuncionarioUpdateView(UpdateView):
+class FuncionarioUpdateView(PermissionRequiredMixin, UpdateView):
+    permission_required = 'funcionarios.update_funcionario'
+    permission_denied_message = 'Editar funcionario'
     model = Funcionario
     form_class = FuncionarioModelForm
     template_name = 'funcionario_forms.html'
     success_url = reverse_lazy('funcionarios')
 
 
-class FuncionarioDeleteView(DeleteView):
+class FuncionarioDeleteView(PermissionRequiredMixin, DeleteView):
+    permission_required = 'funcionarios.delete_funcionario'
+    permission_denied_message = 'Excluir     funcionario'
     model = Funcionario
     template_name = 'funcionario_apagar.html'
     success_url = reverse_lazy('funcionarios')

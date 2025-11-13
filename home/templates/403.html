@@ -1,0 +1,19 @@
+{% extends 'principal.html' %}
+{% load static %}
+{% block content %}
+<div class="d-flex justify-content-center align-items-center vh-100 bg-light">
+    <div class="card shadow-lg border-0 text-center p-5" style="max-width: 500px; border-radius: 1rem;">
+        <div class="mb-4 text-danger">
+            <i class="bi bi-shield-lock-fill" style="font-size: 4rem;"></i>
+        </div>
+        <h2 class="fw-bold text-danger mb-3">Acesso Negado (403)</h2>
+        <p class="text-muted mb-4">
+            Você não tem permissão para acessar o módulo<br>
+            <strong class="text-dark">{{ exception }}</strong>.
+        </p>
+        <a href="{% url 'index' %}" class="btn btn-outline-danger px-4">
+            <i class="bi bi-house-door"></i> Voltar à página inicial
+        </a>
+    </div>
+</div>
+{% endblock %}

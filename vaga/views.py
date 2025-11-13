@@ -1,13 +1,16 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.urls import reverse_lazy
 from .models import Vaga
 from .forms import VagaModelForm
 
-class VagaView(ListView):
+class VagaView(PermissionRequiredMixin, ListView):
+    permission_required = 'vaga.view_vaga'
+    permission_denied_message = 'Visualizar vaga'
     model = Vaga
     template_name = 'vaga.html'
 
@@ -25,21 +28,27 @@ class VagaView(ListView):
         else:
             return messages.info(self.request, 'Não existem vagas cadastradas.')
 
-class VagaAddView(SuccessMessageMixin, CreateView):
+class VagaAddView(PermissionRequiredMixin, SuccessMessageMixin, CreateView):
+    permission_required = 'vaga.add_vaga'
+    permission_denied_message = 'Cadastrar vaga'
     model = Vaga
     form_class = VagaModelForm
     template_name = 'vaga_form.html'
     success_url = reverse_lazy('vagas')
     success_message = 'Vaga cadastrada com sucesso.'
 
-class VagaUpdateView(SuccessMessageMixin, UpdateView):
+class VagaUpdateView(PermissionRequiredMixin, SuccessMessageMixin, UpdateView):
+    permission_required = 'vaga.update_vaga'
+    permission_denied_message = 'Editar vaga'
     model = Vaga
     form_class = VagaModelForm
     template_name = 'vaga_form.html'
     success_url = reverse_lazy('vagas')
     success_message = 'Vaga atualizada com sucesso.'
 
-class VagaDeleteView(SuccessMessageMixin, DeleteView):
+class VagaDeleteView(PermissionRequiredMixin, SuccessMessageMixin, DeleteView):
+    permission_required = 'vaga.delete_vaga'
+    permission_denied_message = 'Deletar vaga'
     model = Vaga
     template_name = 'vaga_apagar.html'
     success_url = reverse_lazy('vagas')

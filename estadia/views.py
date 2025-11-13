@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.urls import reverse_lazy
@@ -22,7 +23,9 @@ def registrar_saida(request, pk):
     return redirect('estadias')
 
 
-class EstadiaView(ListView):
+class EstadiaView(PermissionRequiredMixin, ListView):
+    permission_required = 'estadia.view_estadia'
+    permission_denied_message = 'Visualizar estadia'
     model = Estadia
     template_name = 'estadia.html'
 
@@ -44,7 +47,9 @@ class EstadiaView(ListView):
             return Estadia.objects.none()
 
 
-class EstadiaAddView(SuccessMessageMixin, CreateView):
+class EstadiaAddView(PermissionRequiredMixin, SuccessMessageMixin, CreateView):
+    permission_required = 'estadia.add_estadia'
+    permission_denied_message = 'Cadastrar estadia'
     model = Estadia
     form_class = EstadiaModelForm
     template_name = 'estadia_forms.html'
@@ -61,7 +66,9 @@ class EstadiaAddView(SuccessMessageMixin, CreateView):
         return response
 
 
-class EstadiaUpdateView(SuccessMessageMixin, UpdateView):
+class EstadiaUpdateView(PermissionRequiredMixin, SuccessMessageMixin, UpdateView):
+    permission_required = 'estadia.update_estadia'
+    permission_denied_message = 'Editar estadia'
     model = Estadia
     form_class = EstadiaModelForm
     template_name = 'estadia_forms.html'
@@ -69,7 +76,9 @@ class EstadiaUpdateView(SuccessMessageMixin, UpdateView):
     success_message = 'Estadia atualizada com sucesso.'
 
 
-class EstadiaDeleteView(SuccessMessageMixin, DeleteView):
+class EstadiaDeleteView(PermissionRequiredMixin, SuccessMessageMixin, DeleteView):
+    permission_required = 'estadia.delete_estadia'
+    permission_denied_message = 'Excluir estadia'
     model = Estadia
     template_name = 'estadia_apagar.html'
     success_url = reverse_lazy('estadias')

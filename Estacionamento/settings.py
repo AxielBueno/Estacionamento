@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
 ]
 
 INSTALLED_APPS += ['home', 'pessoa', 'veiculo', 'vaga', 'estadia', 'pagamento', 'funcionarios',
@@ -141,3 +142,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'axiel.bueno@acad.ufsm.br'
 EMAIL_HOST_PASSWORD = 'ycez ovyd tysk kdwg'
 DEFAULT_FROM_EMAIL = 'Estacionamento Edens'
+
+LOGIN_REDIRECT_URL = 'index'
+LOGIN_URL = 'login'
+LOGOUT_REDIRECT_URL = 'login'

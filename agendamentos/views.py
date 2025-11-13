@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.urls import reverse_lazy
@@ -83,7 +84,7 @@ def finalizar_agendamento(request, pk):
     return redirect('agendamentos')
 
 
-class AgendamentoView(ListView):
+class AgendamentoView(LoginRequiredMixin, ListView):
     model = Agendamento
     template_name = 'agendamento.html'
 
@@ -106,7 +107,7 @@ class AgendamentoView(ListView):
             return Agendamento.objects.none()
 
 
-class AgendamentoAddView(SuccessMessageMixin, CreateView):
+class AgendamentoAddView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = Agendamento
     form_class = AgendamentoModelForm
     template_name = 'agendamento_forms.html'
@@ -114,7 +115,7 @@ class AgendamentoAddView(SuccessMessageMixin, CreateView):
     success_message = 'Agendamento cadastrado com sucesso.'
 
 
-class AgendamentoUpdateView(SuccessMessageMixin, UpdateView):
+class AgendamentoUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Agendamento
     form_class = AgendamentoModelForm
     template_name = 'agendamento_forms.html'
@@ -122,7 +123,7 @@ class AgendamentoUpdateView(SuccessMessageMixin, UpdateView):
     success_message = 'Agendamento atualizado com sucesso.'
 
 
-class AgendamentoDeleteView(SuccessMessageMixin, DeleteView):
+class AgendamentoDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     model = Agendamento
     template_name = 'agendamento_apagar.html'
     success_url = reverse_lazy('agendamentos')

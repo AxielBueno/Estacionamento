@@ -1,13 +1,17 @@
 from django.shortcuts import render
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.urls import reverse_lazy
 from .models import Cliente
 from .forms import ClienteModelForm
 
-class ClienteView(ListView):
+class ClienteView(PermissionRequiredMixin, ListView):
+    permission_required = 'pessoa.add_pessoa'
+    permission_denied_message = 'Visualizar cliente'
+    model = Cliente
     model = Cliente
     template_name ='pessoas.html'
 
@@ -25,21 +29,27 @@ class ClienteView(ListView):
         else:
             return messages.info(self.request, 'Não existem clientes cadastrados.')
 
-class ClienteAddView(SuccessMessageMixin, CreateView):
+class ClienteAddView(PermissionRequiredMixin, SuccessMessageMixin, CreateView):
+    permission_required = 'pessoa.add_pessoa'
+    permission_denied_message = 'Cadastrar cliente'
     model = Cliente
     form_class = ClienteModelForm
     template_name = 'pessoa_form.html'
     success_url = reverse_lazy('clientes')
     success_message = 'Cliente cadastrado com sucesso.'
 
-class ClienteUpdateView(SuccessMessageMixin, UpdateView):
+class ClienteUpdateView(PermissionRequiredMixin, SuccessMessageMixin, UpdateView):
+    permission_required = 'pessoa.add_pessoa'
+    permission_denied_message = 'Editar cliente'
     model = Cliente
     form_class = ClienteModelForm
     template_name = 'pessoa_form.html'
     success_url = reverse_lazy('clientes')
     success_message = 'Cliente atualizado com sucesso.'
 
-class ClienteDeleteView(SuccessMessageMixin, DeleteView):
+class ClienteDeleteView(PermissionRequiredMixin, SuccessMessageMixin, DeleteView):
+    permission_required = 'pessoa.add_pessoa'
+    permission_denied_message = 'Excluir cliente'
     model = Cliente
     template_name ='pessoa_apagar.html'
     success_url = reverse_lazy('clientes')
