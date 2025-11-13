@@ -9,7 +9,7 @@ from .models import Cliente
 from .forms import ClienteModelForm
 
 class ClienteView(PermissionRequiredMixin, ListView):
-    permission_required = 'pessoa.add_pessoa'
+    permission_required = 'pessoa.view_cliente'
     permission_denied_message = 'Visualizar cliente'
     model = Cliente
     model = Cliente
@@ -30,7 +30,7 @@ class ClienteView(PermissionRequiredMixin, ListView):
             return messages.info(self.request, 'Não existem clientes cadastrados.')
 
 class ClienteAddView(PermissionRequiredMixin, SuccessMessageMixin, CreateView):
-    permission_required = 'pessoa.add_pessoa'
+    permission_required = 'pessoa.add_cliente'
     permission_denied_message = 'Cadastrar cliente'
     model = Cliente
     form_class = ClienteModelForm
@@ -39,7 +39,7 @@ class ClienteAddView(PermissionRequiredMixin, SuccessMessageMixin, CreateView):
     success_message = 'Cliente cadastrado com sucesso.'
 
 class ClienteUpdateView(PermissionRequiredMixin, SuccessMessageMixin, UpdateView):
-    permission_required = 'pessoa.add_pessoa'
+    permission_required = 'pessoa.update_cliente'
     permission_denied_message = 'Editar cliente'
     model = Cliente
     form_class = ClienteModelForm
@@ -48,7 +48,7 @@ class ClienteUpdateView(PermissionRequiredMixin, SuccessMessageMixin, UpdateView
     success_message = 'Cliente atualizado com sucesso.'
 
 class ClienteDeleteView(PermissionRequiredMixin, SuccessMessageMixin, DeleteView):
-    permission_required = 'pessoa.add_pessoa'
+    permission_required = 'pessoa.delete_cliente'
     permission_denied_message = 'Excluir cliente'
     model = Cliente
     template_name ='pessoa_apagar.html'

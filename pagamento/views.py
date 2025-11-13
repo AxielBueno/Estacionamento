@@ -4,10 +4,10 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.urls import reverse_lazy
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from .models import Pagamento
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
-from django.shortcuts import redirect
 from .forms import PagamentoModelForm
 
 
@@ -53,9 +53,11 @@ def concluir_pagamento(request, pk):
     return redirect('pagamentos')
 
 
-class PagamentoView(ListView):
+class PagamentoView(PermissionRequiredMixin, ListView):
     model = Pagamento
     template_name = 'pagamento.html'
+    permission_required = 'pagamento.view_pagamento'
+    permission_denied_message = 'Você não tem permissão para visualizar pagamentos.'
 
     def get_queryset(self):
         buscar = self.request.GET.get('buscar')
@@ -73,23 +75,29 @@ class PagamentoView(ListView):
             return qs.none()
 
 
-class PagamentoAddView(SuccessMessageMixin, CreateView):
+class PagamentoAddView(PermissionRequiredMixin, SuccessMessageMixin, CreateView):
     model = Pagamento
     form_class = PagamentoModelForm
     template_name = 'pagamento_forms.html'
     success_url = reverse_lazy('pagamentos')
     success_message = 'Pagamento cadastrado com sucesso.'
+    permission_required = 'pagamento.add_pagamento'
+    permission_denied_message = 'Você não tem permissão para cadastrar pagamentos.'
 
 
-class PagamentoUpdateView(SuccessMessageMixin, UpdateView):
+class PagamentoUpdateView(PermissionRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Pagamento
     form_class = PagamentoModelForm
     template_name = 'pagamento_forms.html'
     success_url = reverse_lazy('pagamentos')
     success_message = 'Pagamento atualizado com sucesso.'
+    permission_required = 'pagamento.change_pagamento'
+    permission_denied_message = 'Você não tem permissão para editar pagamentos.'
 
 
-class PagamentoDeleteView(SuccessMessageMixin, DeleteView):
+class PagamentoDeleteView(PermissionRequiredMixin, SuccessMessageMixin, DeleteView):
     model = Pagamento
     template_name = 'pagamento_apagar.html'
     success_url = reverse_lazy('pagamentos')
+    permission_required = 'pagamento.delete_pagamento'
+    permission_denied_message = 'Você não tem permissão para excluir pagamentos.'
