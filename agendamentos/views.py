@@ -9,17 +9,15 @@ from django.utils import timezone
 from django.db.models import Q
 from .forms import *
 from decimal import Decimal
-from django.shortcuts import get_object_or_404, redirect
-from django.contrib import messages
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from .models import Agendamento
 
-# DEF que manda email
+
+# Finaliza pagamento e envia email
 def concluir_agendamento(request, pk):
     agendamento = get_object_or_404(Agendamento, pk=pk)
 
-    # Isso daqui serve pra pegar os dados que eu taquei no modal do html
     modalidade = request.GET.get('modalidade')
     desconto_str = request.GET.get('desconto', '0').replace(',', '.')
     try:
@@ -27,9 +25,10 @@ def concluir_agendamento(request, pk):
     except:
         desconto = Decimal('0')
 
+    # Usa o valor_final do model diretamente
     agendamento.metodo_pagamento = modalidade
     agendamento.valor_desconto = desconto
-    agendamento.valor_final = agendamento.valor - desconto
+    # garante que valor_final nunca será recalculado
     agendamento.status = 'finalizado'
     agendamento.saida = timezone.now()
     agendamento.pago = True
@@ -41,7 +40,7 @@ def concluir_agendamento(request, pk):
         dados = {
             'cliente': agendamento.dono.nome,
             'responsavel': getattr(agendamento.placa.dono, 'nome', agendamento.dono.nome)
-                            if hasattr(agendamento.placa, 'dono') else agendamento.dono.nome,
+            if hasattr(agendamento.placa, 'dono') else agendamento.dono.nome,
             'veiculo': getattr(agendamento.placa, 'placa', 'N/A'),
             'entrada': agendamento.entrada.strftime("%d/%m/%Y %H:%M") if agendamento.entrada else 'N/A',
             'saida_prevista': agendamento.saida_prevista.strftime("%d/%m/%Y %H:%M") if agendamento.saida_prevista else 'N/A',
@@ -65,12 +64,13 @@ def concluir_agendamento(request, pk):
 
         messages.success(request, f'O pagamento do agendamento #{agendamento.id} foi concluído e o e-mail enviado!')
     else:
-        messages.success(request, f'O pagamento do agendamento #{agendamento.id} foi concluído com sucesso (sem e-mail enviado).')
+        messages.success(request,
+                         f'O pagamento do agendamento #{agendamento.id} foi concluído com sucesso (sem e-mail enviado).')
 
     return redirect('agendamentos')
 
 
-# DEF que finaliza o agendamento colocando a saida final verdadeira e tals
+# Finaliza agendamento (marca como finalizado)
 def finalizar_agendamento(request, pk):
     agendamento = get_object_or_404(Agendamento, pk=pk)
     if agendamento.status != 'finalizado':
@@ -84,6 +84,7 @@ def finalizar_agendamento(request, pk):
     return redirect('agendamentos')
 
 
+# Lista de agendamentos
 class AgendamentoView(LoginRequiredMixin, ListView):
     model = Agendamento
     template_name = 'agendamento.html'
@@ -100,11 +101,15 @@ class AgendamentoView(LoginRequiredMixin, ListView):
 
         if qs.exists():
             paginator = Paginator(qs, 10)
-            listagem = paginator.get_page(self.request.GET.get('page'))
-            return listagem
+            return paginator.get_page(self.request.GET.get('page'))
         else:
             messages.info(self.request, 'Não existem agendamentos cadastrados.')
             return Agendamento.objects.none()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['now'] = timezone.now()
+        return context
 
 
 class AgendamentoAddView(LoginRequiredMixin, SuccessMessageMixin, CreateView):

@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError
 from decimal import Decimal
 from pessoa.models import Cliente  # importando o dono
 from estadia.models import Estadia  # para pegar a permanência / tempo de estadia
+from valor.models import ValorHora
 
 
 class Pagamento(models.Model):
@@ -19,7 +20,6 @@ class Pagamento(models.Model):
 
     idPagamento = models.AutoField(primary_key=True, verbose_name='ID Pagamento')
 
-    valorHora = models.DecimalField('Valor Hora', max_digits=6, decimal_places=2, default=Decimal('5.00'))
     multa = models.DecimalField('Multa (%)', max_digits=4, decimal_places=2, default=Decimal('10.00'))
 
     metodo = models.CharField(
@@ -60,36 +60,47 @@ class Pagamento(models.Model):
     def __str__(self):
         return f'Pagamento {self.idPagamento} - {self.dono.nome}'
 
+        # 🔥 PEGAR O VALOR HORA ATUAL
+
+    def get_valor_hora_vigente(self):
+        ultimo = ValorHora.objects.order_by('-data_alteracao').first()
+        if not ultimo:
+            raise ValidationError("Nenhum valor de hora vigente cadastrado.")
+        return ultimo.valor_vigente
+
+        # 🔥 CALCULAR TUDO AQUI !!!
+
     def calcular_valor_final(self):
         if not self.estadia.entrada or not self.estadia.saida:
-            raise ValidationError("A estadia deve possuir entrada e saída para calcular o valor final.")
+            raise ValidationError("A estadia deve ter entrada e saída.")
 
         delta = self.estadia.saida - self.estadia.entrada
         horas = Decimal(delta.total_seconds() / 3600).quantize(Decimal('1.00'))
 
-        # isso daqui é pra basicamente que o cliente pague o valor de 1h, mesmo que use o estacionamento por menos de 1...
+        # mínima de 1h
         if horas < 1:
             horas = Decimal('1.00')
 
-        valor_base = horas * self.valorHora
+        valor_hora = self.get_valor_hora_vigente()
+        valor_base = horas * valor_hora
         valor_final = valor_base
 
         self.valor_desconto = Decimal('0.00')
         self.valor_multa = Decimal('0.00')
 
-        # Aqui rola o famoso dixconto de 10% pra quem eu for com a cara
+        # Desconto por método
         if self.metodo in ['D', 'P']:
             desconto = valor_base * Decimal('0.10')
             valor_final -= desconto
             self.valor_desconto = desconto.quantize(Decimal('0.01'))
 
-        # Desconto para quem é de uma empresa
+        # Desconto por empresa
         if self.dono.empresa.exists():
             desconto_empresa = valor_final * Decimal('0.20')
             valor_final -= desconto_empresa
             self.valor_desconto += desconto_empresa.quantize(Decimal('0.01'))
 
-        # Aqui a pessoa se ferrou, multa de 10%
+        # Multa
         if self.multa_aplicada:
             multa_valor = valor_final * Decimal('0.10')
             valor_final += multa_valor

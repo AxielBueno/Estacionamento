@@ -13,5 +13,6 @@ urlpatterns = [
     path('', include('agendamentos.urls')),
     path('', include('juridico.urls')),
     path('', include('pagamento.urls')),
+    path('', include('valor.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

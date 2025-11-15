@@ -1,0 +1,22 @@
+{% extends 'principal.html' %}
+{% load django_bootstrap5 %}
+{% block content %}
+  <div class="card shadow m-3 col-md-6 mx-auto">
+    <div class="card-body">
+      <h3 class="text-center mb-4">Confirmação de Exclusão</h3>
+
+      <p><strong>Valor da Hora:</strong> R$ {{ object.valor }}</p>
+      <p><strong>Data da Alteração:</strong> {{ object.data_alteracao }}</p>
+
+      <p class="mt-4">Tem certeza que deseja <strong>excluir</strong> este valor registrado?</p>
+
+      <form method="POST">
+        {% csrf_token %}
+        <div class="text-end mt-4">
+          {% bootstrap_button button_type="submit" content="Sim, excluir" button_class="btn-danger" %}
+          <a href="{% url 'valorhora' %}" class="btn btn-secondary text-white">Cancelar</a>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}

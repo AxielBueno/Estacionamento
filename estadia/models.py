@@ -23,10 +23,10 @@ class Estadia(models.Model):
         null=True,
     )
 
-    veiculo = models.OneToOneField(
+    veiculo = models.ForeignKey(
         'veiculo.Veiculo',
         on_delete=models.PROTECT,
-        related_name='estadia',
+        related_name='estadias',
         verbose_name='Veículo',
         help_text='Veículo que será estacionado',
         blank=True,
