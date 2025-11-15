@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -14,26 +14,61 @@ from django.core.mail import send_mail
 from .models import Agendamento
 
 
-# Finaliza pagamento e envia email
+# ============================
+#   TELA PAGAR
+# ============================
+def agendamento_pagar(request, pk):
+    agendamento = get_object_or_404(Agendamento, pk=pk)
+
+    valor_base = agendamento.valor_base
+    desconto_juridico = agendamento.desconto_juridico
+
+    desconto_pix_debito_calc = (valor_base * Decimal('0.10')).quantize(Decimal('0.01'))
+    aplicar_pix_debito = False
+
+    metodo_get = request.GET.get('metodo')
+    if metodo_get and metodo_get.lower() in ['pix', 'debito']:
+        aplicar_pix_debito = True
+
+    desconto_total = desconto_juridico + (desconto_pix_debito_calc if aplicar_pix_debito else Decimal('0.00'))
+    valor_final = (valor_base - desconto_total).quantize(Decimal('0.01'))
+
+    context = {
+        'agendamento': agendamento,
+        'valor_base': valor_base,
+        'desconto_juridico': desconto_juridico,
+        'desconto_pix_debito_calc': desconto_pix_debito_calc,
+        'aplicar_pix_debito': aplicar_pix_debito,
+        'desconto_total': desconto_total,
+        'valor_final': valor_final,
+    }
+
+    return render(request, 'agendamento_pagar.html', context)
+
+
+# ============================
+#   CONCLUI PAGAMENTO + EMAIL
+# ============================
 def concluir_agendamento(request, pk):
     agendamento = get_object_or_404(Agendamento, pk=pk)
 
     modalidade = request.GET.get('modalidade')
     desconto_str = request.GET.get('desconto', '0').replace(',', '.')
+
     try:
         desconto = Decimal(str(desconto_str))
     except:
         desconto = Decimal('0')
 
-    # Usa o valor_final do model diretamente
+    # Atualiza dados do pagamento
     agendamento.metodo_pagamento = modalidade
     agendamento.valor_desconto = desconto
-    # garante que valor_final nunca será recalculado
     agendamento.status = 'finalizado'
     agendamento.saida = timezone.now()
     agendamento.pago = True
     agendamento.save()
 
+    # Envio de email
     email = [agendamento.dono.email] if getattr(agendamento.dono, 'email', None) else []
 
     if email:
@@ -59,7 +94,7 @@ def concluir_agendamento(request, pk):
             from_email='axiel.bueno@acad.ufsm.br',
             recipient_list=email,
             html_message=html_email,
-            fail_silently=True,
+            fail_silently=False,   # <- AGORA MOSTRA QUALQUER ERRO
         )
 
         messages.success(request, f'O pagamento do agendamento #{agendamento.id} foi concluído e o e-mail enviado!')
@@ -70,7 +105,9 @@ def concluir_agendamento(request, pk):
     return redirect('agendamentos')
 
 
-# Finaliza agendamento (marca como finalizado)
+# ============================
+#   FINALIZAR (SEM PAGAMENTO)
+# ============================
 def finalizar_agendamento(request, pk):
     agendamento = get_object_or_404(Agendamento, pk=pk)
     if agendamento.status != 'finalizado':
@@ -84,7 +121,9 @@ def finalizar_agendamento(request, pk):
     return redirect('agendamentos')
 
 
-# Lista de agendamentos
+# ============================
+#   LISTAGEM
+# ============================
 class AgendamentoView(LoginRequiredMixin, ListView):
     model = Agendamento
     template_name = 'agendamento.html'

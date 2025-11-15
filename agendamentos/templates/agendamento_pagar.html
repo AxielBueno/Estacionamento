@@ -1,0 +1,93 @@
+{% extends 'principal.html' %}
+{% load static %}
+{% load django_bootstrap5 %}
+{% block content %}
+
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-7">
+      <div class="card shadow-lg border-0">
+        <div class="card-header text-center" style="background: #121212; color: white;">
+          <h4 class="mb-0">Pagamento</h4>
+        </div>
+
+        <div class="card-body p-4">
+          <p class="fs-5"><strong>Valor Base:</strong> R$ <span id="valorBaseDisplay">{{ valor_base|floatformat:2 }}</span></p>
+
+          <p class="fs-5"><strong>Desconto Jurídico:</strong> R$ <span id="descontoJuridicoDisplay">{{ desconto_juridico|floatformat:2 }}</span></p>
+
+          <p class="fs-5">
+            <strong>Desconto PIX/Débito (10%):</strong>
+            R$ <span id="descontoPixDebitoDisplay">{{ desconto_pix_debito_calc|floatformat:2 }}</span>
+          </p>
+
+          <hr>
+
+          <p class="fs-5">
+            <strong>Desconto Total:</strong>
+            <span class="text-success">- R$ <span id="descontoTotalDisplay">{{ desconto_total|floatformat:2 }}</span></span>
+          </p>
+
+          <p class="fs-4 mt-3">
+            <strong>Valor Final:</strong>
+            <span class="text-primary">R$ <span id="valorFinalDisplay">{{ valor_final|floatformat:2 }}</span></span>
+          </p>
+
+          <hr>
+
+          <div class="mb-3 mt-3">
+            <label for="metodoSelect" class="form-label"><strong>Modalidade de Pagamento:</strong></label>
+            <select id="metodoSelect" class="form-select">
+              <option value="credito" {% if not aplicar_pix_debito %}selected{% endif %}>Crédito (sem desconto)</option>
+              <option value="pix" {% if aplicar_pix_debito %}selected{% endif %}>PIX (10% off)</option>
+              <option value="debito" {% if aplicar_pix_debito %}selected{% endif %}>Débito (10% off)</option>
+            </select>
+          </div>
+
+          <div class="text-center mt-4">
+            <a id="btnPagar" href="#" class="btn btn-success px-4">Pagar</a>
+            <a href="{% url 'agendamentos' %}" class="btn btn-secondary px-4 ms-2">Voltar</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function(){
+    const valorBase = parseFloat("{{ valor_base|floatformat:2 }}".replace(',', '.')) || 0;
+    const descontoJuridico = parseFloat("{{ desconto_juridico|floatformat:2 }}".replace(',', '.')) || 0;
+    const descontoPixCalc = parseFloat("{{ desconto_pix_debito_calc|floatformat:2 }}".replace(',', '.')) || 0;
+
+    const metodoSelect = document.getElementById('metodoSelect');
+    const descontoPixEl = document.getElementById('descontoPixDebitoDisplay');
+    const descontoTotalEl = document.getElementById('descontoTotalDisplay');
+    const valorFinalEl = document.getElementById('valorFinalDisplay');
+    const btnPagar = document.getElementById('btnPagar');
+
+    function atualizar() {
+      const metodo = metodoSelect.value;
+      let descontoPix = 0;
+
+      if (metodo === 'pix' || metodo === 'debito') {
+        descontoPix = descontoPixCalc;
+      }
+
+      const descontoTotal = descontoJuridico + descontoPix;
+      const valorFinal = (valorBase - descontoTotal);
+
+      descontoPixEl.innerText = descontoPix.toFixed(2).replace('.', ',');
+      descontoTotalEl.innerText = descontoTotal.toFixed(2).replace('.', ',');
+      valorFinalEl.innerText = valorFinal.toFixed(2).replace('.', ',');
+
+      const descontoParam = descontoTotal.toFixed(2);
+      btnPagar.href = "{% url 'concluir_pagamento' pk=agendamento.id %}?modalidade=" + metodo + "&desconto=" + descontoParam;
+    }
+
+    metodoSelect.addEventListener('change', atualizar);
+    atualizar();
+  })();
+</script>
+
+{% endblock %}

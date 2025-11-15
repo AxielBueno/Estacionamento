@@ -53,56 +53,62 @@
                 <td>{{ agendamento.saida_prevista|date:"d/m/Y H:i" }}</td>
                 <td>{{ agendamento.saida|date:"d/m/Y H:i" }}</td>
                 <td>{{ agendamento.get_status_display }}</td>
-                <td>R$ {{ agendamento.valor_final|floatformat:2 }}</td>
+                <td>R$ {{ agendamento.valor_base|floatformat:2 }}</td>
                 <td>{{ agendamento.funcionario }}</td>
                 <td class="text-center">
+
                     <a href="{% url 'agendamentos_editar' agendamento.pk %}" class="me-2" title="Editar">
                         <i class="fas fa-edit"></i>
                     </a>
+
                     <a href="{% url 'agendamentos_apagar' agendamento.pk %}" title="Apagar"
                        class="text-danger me-2">
                         <i class="fas fa-trash-alt"></i>
                     </a>
 
                     {% if agendamento.status != 'finalizado' %}
-                    {% if now >= agendamento.entrada %}
-                    <a href="{% url 'agendamentos_finalizar' agendamento.pk %}" class="text-primary" title="Finalizar">
-                        <i class="fas fa-check-circle"></i>
-                    </a>
-                    {% else %}
-                    <span class="text-secondary" title="Só pode finalizar após a hora de entrada"
-                          style="pointer-events: none; opacity: 0.4;">
+                        {% if now >= agendamento.entrada %}
+                            <a href="{% url 'agendamentos_finalizar' agendamento.pk %}" class="text-primary" title="Finalizar">
+                                <i class="fas fa-check-circle"></i>
+                            </a>
+                        {% else %}
+                            <span class="text-secondary" title="Só pode finalizar após a hora de entrada"
+                                  style="pointer-events: none; opacity: 0.4;">
                                 <i class="fas fa-check-circle"></i>
                             </span>
-                    {% endif %}
+                        {% endif %}
                     {% else %}
-                    <span class="text-secondary" title="Já finalizado"
-                          style="pointer-events: none; opacity: 0.4;">
+                        <span class="text-secondary" title="Já finalizado"
+                              style="pointer-events: none; opacity: 0.4;">
                             <i class="fas fa-check-circle"></i>
                         </span>
                     {% endif %}
 
                     {% if agendamento.pago %}
-                    <button class="btn btn-secondary btn-sm" disabled title="Já pago">Pago</button>
+                        <button class="btn btn-secondary btn-sm" disabled title="Já pago">Pago</button>
+
                     {% elif agendamento.status != 'finalizado' %}
-                    <button class="btn btn-secondary btn-sm" disabled
-                            title="Finalize o agendamento antes de pagar">Pagamento
-                    </button>
+                        <button class="btn btn-secondary btn-sm" disabled
+                                title="Finalize o agendamento antes de pagar">Pagamento</button>
+
                     {% else %}
-                    <a href="#" class="btn btn-warning btn-sm" data-bs-toggle="modal"
-                       data-bs-target="#modalPagar{{ agendamento.id }}" title="Pagar">Pagamento</a>
+                        <!-- AGORA REDIRECIONA PARA A PÁGINA NOVA -->
+                        <a href="{% url 'agendamento_pagar' agendamento.pk %}"
+                           class="btn btn-warning btn-sm" title="Pagar">
+                            Pagamento
+                        </a>
                     {% endif %}
+
                 </td>
             </tr>
 
-            <!-- Modal Detalhes -->
+            <!-- Modal Detalhes (MANTIDO) -->
             <div class="modal fade" id="modal{{ agendamento.id }}" tabindex="-1"
                  aria-labelledby="modalLabel{{ agendamento.id }}" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="modalLabel{{ agendamento.id }}">Agendamento #{{ agendamento.id
-                                }}</h5>
+                            <h5 class="modal-title" id="modalLabel{{ agendamento.id }}">Agendamento #{{ agendamento.id }}</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Fechar"></button>
                         </div>
@@ -121,97 +127,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Modal Pagamento -->
-            <div class="modal fade" id="modalPagar{{ agendamento.id }}" tabindex="-1"
-                 aria-labelledby="modalPagarLabel{{ agendamento.id }}" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header bg-dark text-white">
-                            <h5 class="modal-title" id="modalPagarLabel{{ agendamento.id }}">
-                                Pagamento - Agendamento #{{ agendamento.id }}
-                            </h5>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                                    aria-label="Fechar"></button>
-                        </div>
-                        <div class="modal-body">
-                            <p><strong>Placa:</strong> {{ agendamento.placa }}</p>
-                            <p><strong>Dono:</strong> {{ agendamento.dono }}</p>
-                            <p><strong>Entrada:</strong> {{ agendamento.entrada|date:"d/m/Y H:i" }}</p>
-                            <p><strong>Saída Prevista:</strong> {{ agendamento.saida_prevista|date:"d/m/Y H:i" }}</p>
-                            <p><strong>Saída:</strong> {{ agendamento.saida|date:"d/m/Y H:i" }}</p>
-
-                            <hr>
-                            <p><strong>Valor Final:</strong> R$ {{ agendamento.valor_final|floatformat:2 }}</p>
-
-                            <div class="mb-3 mt-3">
-                                <label for="modalidade{{ agendamento.id }}" class="form-label"><strong>Modalidade de
-                                    Pagamento:</strong></label>
-                                <select id="modalidade{{ agendamento.id }}" class="form-select">
-                                    <option value="credito">Crédito</option>
-                                    <option value="debito">Débito</option>
-                                    <option value="pix">PIX</option>
-                                </select>
-                            </div>
-
-                            {% if agendamento.dono.empresa.count %}
-                            <div class="alert alert-info py-2">
-                                <i class="fas fa-building"></i> Cliente possui empresa cadastrada (20% de desconto
-                                permanente)
-                            </div>
-                            {% endif %}
-                        </div>
-
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="button" class="btn btn-success text-white"
-                                    onclick="
-                                        const modalidade = document.getElementById('modalidade{{ agendamento.id }}').value;
-                                        window.location.href = `{% url 'pagamento_concluir' agendamento.pk %}?modalidade=${modalidade}`;
-                                    ">
-                                Pagar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <script>
-                (function () {
-                    const valorFinalEl = document.getElementById('total{{ agendamento.id }}');
-                    const descontoEl = document.getElementById('desconto{{ agendamento.id }}');
-                    const selectModalidade = document.getElementById('modalidade{{ agendamento.id }}');
-
-                    // Aqui você pega o valor final como base
-                    const valorBase = parseFloat(valorFinalEl.innerText.replace('R$ ', '').replace(',', '.')) || 0;
-
-                    function atualizar() {
-                        let descontoPercentual = 0;
-
-                        {% if agendamento.dono.empresa.count %}
-                        descontoPercentual += 20;
-                        {% endif %}
-
-                        const modalidade = selectModalidade.value;
-                        if (modalidade === 'pix' || modalidade === 'debito') descontoPercentual += 10;
-
-                        const desconto = valorBase * (descontoPercentual / 100);
-                        const total = valorBase - desconto;
-
-                        descontoEl.innerText = 'R$ ' + desconto.toFixed(2).replace('.', ',');
-                        valorFinalEl.innerText = 'R$ ' + total.toFixed(2).replace('.', ',');
-                    }
-
-                    selectModalidade.addEventListener('change', atualizar);
-
-                    const modalElement = valorFinalEl.closest('.modal');
-                    if (modalElement) {
-                        modalElement.addEventListener('shown.bs.modal', atualizar);
-                    }
-
-                    atualizar();
-                })();
-            </script>
 
             {% endfor %}
             </tbody>

@@ -60,7 +60,6 @@ class Pagamento(models.Model):
     def __str__(self):
         return f'Pagamento {self.idPagamento} - {self.dono.nome}'
 
-        # 🔥 PEGAR O VALOR HORA ATUAL
 
     def get_valor_hora_vigente(self):
         ultimo = ValorHora.objects.order_by('-data_alteracao').first()
@@ -68,7 +67,6 @@ class Pagamento(models.Model):
             raise ValidationError("Nenhum valor de hora vigente cadastrado.")
         return ultimo.valor_vigente
 
-        # 🔥 CALCULAR TUDO AQUI !!!
 
     def calcular_valor_final(self):
         if not self.estadia.entrada or not self.estadia.saida:
