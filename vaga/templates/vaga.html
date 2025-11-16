@@ -33,7 +33,6 @@
                     <thead class="table-secondary">
                     <tr>
                         <th>Número</th>
-                        <th>Tamanho</th>
                         <th>Andar</th>
                         <th>Status</th>
                         <th style="width: 100px; text-align: center">Ações</th>
@@ -43,7 +42,6 @@
                     {% for vaga in object_list %}
                         <tr>
                             <td>{{ vaga.numero }}</td>
-                            <td>{{ vaga.tamanho }}</td>
                             <td>{{ vaga.andar }}</td>
                             <td>{{ vaga.status }}</td>
                             <td class="text-center">

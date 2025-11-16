@@ -9,8 +9,6 @@ from django.utils import timezone
 from django.db.models import Q
 from .forms import *
 from decimal import Decimal
-from django.template.loader import render_to_string
-from django.core.mail import send_mail
 from .models import Agendamento
 
 
@@ -47,16 +45,17 @@ def agendamento_pagar(request, pk):
 
 
 # ============================
-#   CONCLUI PAGAMENTO + EMAIL
+#   CONCLUI PAGAMENTO (SEM EMAIL)
 # ============================
 def concluir_agendamento(request, pk):
     agendamento = get_object_or_404(Agendamento, pk=pk)
 
+    # Pega os dados da URL
     modalidade = request.GET.get('modalidade')
     desconto_str = request.GET.get('desconto', '0').replace(',', '.')
 
     try:
-        desconto = Decimal(str(desconto_str))
+        desconto = Decimal(desconto_str)
     except:
         desconto = Decimal('0')
 
@@ -68,42 +67,10 @@ def concluir_agendamento(request, pk):
     agendamento.pago = True
     agendamento.save()
 
-    # Envio de email
-    email = [agendamento.dono.email] if getattr(agendamento.dono, 'email', None) else []
+    messages.success(request, f'O pagamento do agendamento #{agendamento.id} foi concluído com sucesso.')
 
-    if email:
-        dados = {
-            'cliente': agendamento.dono.nome,
-            'responsavel': getattr(agendamento.placa.dono, 'nome', agendamento.dono.nome)
-            if hasattr(agendamento.placa, 'dono') else agendamento.dono.nome,
-            'veiculo': getattr(agendamento.placa, 'placa', 'N/A'),
-            'entrada': agendamento.entrada.strftime("%d/%m/%Y %H:%M") if agendamento.entrada else 'N/A',
-            'saida_prevista': agendamento.saida_prevista.strftime("%d/%m/%Y %H:%M") if agendamento.saida_prevista else 'N/A',
-            'saida': agendamento.saida.strftime("%d/%m/%Y %H:%M") if agendamento.saida else 'N/A',
-            'pagamento': agendamento.metodo_pagamento.capitalize() if agendamento.metodo_pagamento else 'N/A',
-            'desconto': f"R$ {agendamento.valor_desconto:.2f}",
-            'valor_final': f"R$ {agendamento.valor_final:.2f}",
-        }
-
-        texto_email = render_to_string('emails/agendamento_email.txt', dados)
-        html_email = render_to_string('emails/agendamento_email.html', dados)
-
-        send_mail(
-            subject='Estacionamento Edens - Pagamento Concluído',
-            message=texto_email,
-            from_email='axiel.bueno@acad.ufsm.br',
-            recipient_list=email,
-            html_message=html_email,
-            fail_silently=False,   # <- AGORA MOSTRA QUALQUER ERRO
-        )
-
-        messages.success(request, f'O pagamento do agendamento #{agendamento.id} foi concluído e o e-mail enviado!')
-    else:
-        messages.success(request,
-                         f'O pagamento do agendamento #{agendamento.id} foi concluído com sucesso (sem e-mail enviado).')
-
+    # Redireciona para a lista
     return redirect('agendamentos')
-
 
 # ============================
 #   FINALIZAR (SEM PAGAMENTO)

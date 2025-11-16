@@ -67,37 +67,36 @@
                     </a>
 
                     {% if agendamento.status != 'finalizado' %}
-                        {% if now >= agendamento.entrada %}
-                            <a href="{% url 'agendamentos_finalizar' agendamento.pk %}" class="text-primary" title="Finalizar">
-                                <i class="fas fa-check-circle"></i>
-                            </a>
-                        {% else %}
-                            <span class="text-secondary" title="Só pode finalizar após a hora de entrada"
-                                  style="pointer-events: none; opacity: 0.4;">
+                    {% if now >= agendamento.entrada %}
+                    <a href="{% url 'agendamentos_finalizar' agendamento.pk %}" class="text-primary" title="Finalizar">
+                        <i class="fas fa-check-circle"></i>
+                    </a>
+                    {% else %}
+                    <span class="text-secondary" title="Só pode finalizar após a hora de entrada"
+                          style="pointer-events: none; opacity: 0.4;">
                                 <i class="fas fa-check-circle"></i>
                             </span>
-                        {% endif %}
+                    {% endif %}
                     {% else %}
-                        <span class="text-secondary" title="Já finalizado"
-                              style="pointer-events: none; opacity: 0.4;">
+                    <span class="text-secondary" title="Já finalizado"
+                          style="pointer-events: none; opacity: 0.4;">
                             <i class="fas fa-check-circle"></i>
                         </span>
                     {% endif %}
 
                     {% if agendamento.pago %}
-                        <button class="btn btn-secondary btn-sm" disabled title="Já pago">Pago</button>
-
+                    <button class="btn btn-secondary btn-sm" disabled title="Já pago">Pago</button>
                     {% elif agendamento.status != 'finalizado' %}
-                        <button class="btn btn-secondary btn-sm" disabled
-                                title="Finalize o agendamento antes de pagar">Pagamento</button>
-
+                    <button class="btn btn-secondary btn-sm" disabled title="Finalize o agendamento antes de pagar">
+                        Pagamento
+                    </button>
                     {% else %}
-                        <!-- AGORA REDIRECIONA PARA A PÁGINA NOVA -->
-                        <a href="{% url 'agendamento_pagar' agendamento.pk %}"
-                           class="btn btn-warning btn-sm" title="Pagar">
-                            Pagamento
-                        </a>
+                    <a href="{% url 'agendamento_pagar' agendamento.pk %}?modalidade=credito"
+                       class="btn btn-warning btn-sm" title="Pagar">
+                        Pagamento
+                    </a>
                     {% endif %}
+
 
                 </td>
             </tr>
@@ -108,7 +107,8 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="modalLabel{{ agendamento.id }}">Agendamento #{{ agendamento.id }}</h5>
+                            <h5 class="modal-title" id="modalLabel{{ agendamento.id }}">Agendamento #{{ agendamento.id
+                                }}</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Fechar"></button>
                         </div>

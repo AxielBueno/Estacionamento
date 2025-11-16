@@ -7,11 +7,6 @@ class Vaga(models.Model):
         ('C', '3º Andar'),
     ]
 
-    TAMANHO_CHOICES = [
-        ('Pequeno', 'Pequeno'),
-        ('Médio', 'Medio'),
-        ('Grande', 'Grande'),
-    ]
 
     STATUS_CHOICES = [
         ('Livre', 'Livre'),
@@ -19,7 +14,6 @@ class Vaga(models.Model):
     ]
 
     numero = models.CharField('Número', max_length=10, help_text='Número da vaga')
-    tamanho = models.CharField('Tamanho', max_length=20, choices=TAMANHO_CHOICES, help_text='Tamanho da vaga (ex: Pequena, Média, Grande)')
     andar = models.CharField('Andar', max_length=1, choices=ANDAR_CHOICES, help_text='Andar da vaga')
     status = models.CharField('Status', max_length=10, choices=STATUS_CHOICES, default='Livre', help_text='Status atual da vaga')
 
